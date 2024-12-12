@@ -1,0 +1,12 @@
+<label>Email:</label>
+    <input  
+    type="email"
+    formControlName="email"
+    placeholder="Introduce tu email"
+    name="email"
+  />
+  <span>
+    <button (click)="aniadirInvitado()" class="btn btn-primary mr-1">generar Invitado</button>
+  </span>
+
+  <div *ngIF="hayURLGenerada" {{URLGenerada}}></div>

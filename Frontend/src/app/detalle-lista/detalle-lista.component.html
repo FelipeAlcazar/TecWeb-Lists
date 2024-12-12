@@ -1,0 +1,8 @@
+<label for="nuevoProducto">Producto a añadir en la lista:</label>
+<input [(ngModel)]="nuevoProducto" placeholder="agregar producto" />
+<br>
+<label for="unidadesPedidas">Unidades a comprar (0-10):</label>
+<input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10"  />
+<br>
+<button (click)="aniadirProducto()">+ A&ntilde;iadir producto a lista</button>
+

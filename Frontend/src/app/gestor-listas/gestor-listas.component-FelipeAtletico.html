@@ -1,0 +1,15 @@
+<p>Tus listas de la compra</p>
+<input type="text" [(ngModel)]="nuevaLista" placeholder="Nuevo Elemento">
+<button (click)="agregarLista()">Agregar</button>
+<p>Listas Creadas</p>
+<table *ngFor="let item of misListas; let i = index">
+  <tr>
+        <td> {{ item.nombre }} </td>
+        <td>{{ item.id }}</td>
+        <td><button (click)="agregarProducto(i)">Agregar Producto</button></td>
+
+        <td><button (click)="eliminarLista(i)">Eliminar</button></td>
+        <td><button (click)="visualizarLista(i)"> ver detalle</button></td>
+        <td><button (click)="usuariosLista(i)"> Gestionar miembros</button></td>
+  </tr>
+</table>
