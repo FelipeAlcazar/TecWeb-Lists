@@ -22,6 +22,9 @@
         formControlName="pwd"
         class="form-control"
       />
+      <div class="form-group text-center">
+        <a href="/contrasenaOlvidada">¿Has olvidado tu contraseña?</a>
+      </div>
       <div class="invalid-feedback" *ngIf="submitted && loginForm.controls['pwd'].errors">
         <div *ngIf="loginForm.controls['pwd'].errors?.['required']">La contraseña es obligatoria</div>
         <div *ngIf="loginForm.controls['pwd'].errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</div>

@@ -1,0 +1,29 @@
+<div class="container">
+  <h2 class="text-center">Enviar correo de recuperación</h2>
+    <form class='custom-form' [formGroup]="recoveryForm" (ngSubmit)="onSubmit()">      
+      <div class="form-group">
+        <label>Email</label>
+        <input  
+          type="email"
+          formControlName="email"
+          placeholder="Introduce tu email"
+          name="email"
+          class="form-control"
+        />
+        <div class="invalid-feedback" *ngIf="submitted && recoveryForm.controls['email'].errors">
+          <div *ngIf="recoveryForm.controls['email'].errors?.['required']">El email es obligatorio</div>
+          <div *ngIf="recoveryForm.controls['email'].errors?.['email']">El formato del email no es correcto</div>
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button class="btn btn-primary mr-1" type="submit">Siguiente</button>
+        <button class="btn btn-secondary" type="reset" (click)="onReset()">Cancelar</button>
+      </div>
+      <div *ngIf="errorMessage" class="text-danger text-center">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="text-success text-center">
+        {{ successMessage }}
+      </div>
+    </form>
+  </div>
