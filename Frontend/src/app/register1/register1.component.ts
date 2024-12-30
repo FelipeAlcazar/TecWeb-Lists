@@ -42,6 +42,7 @@ export class Register1Component {
       ).subscribe((data) => {
         console.log(JSON.stringify(data));
         this.respuestaOK = true;
+        this.router.navigate(['/GestorListas']);
       });
     }
   }
