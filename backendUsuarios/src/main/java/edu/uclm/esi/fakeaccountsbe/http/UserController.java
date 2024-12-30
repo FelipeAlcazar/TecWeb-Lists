@@ -124,57 +124,67 @@ public class UserController {
     }
 
     @PostMapping("/sendRecoveryEmail")
-    public ResponseEntity<Map<String, String>> sendRecoveryEmail(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-    
-        // Log the email address
-        System.out.println("Sending recovery email to: " + email);
-    
-        // Generate a token for the user
-        String token = UUID.randomUUID().toString();
-        user.setToken(token);
-        userDao.save(user);
-    
-        // Create the email content
-        String recoveryLink = "http://localhost:4200/resetPassword?token=" + token;
-        String emailContent = "<p>Click <a href=\"" + recoveryLink + "\">here</a> to reset your password.</p>";
-    
-        // Send the email using SendGrid API
-        try {
-            Email from = new Email("felipe.alcazar@alu.uclm.es", "Felipe");
-            String subject = "Password Recovery";
-            Email to = new Email(email);
-            Content content = new Content("text/html", emailContent);
-            Mail mail = new Mail(from, subject, to, content);
-    
-            SendGrid sg = new SendGrid(sendGridApiKey);
-            Request request2 = new Request();
-            request2.setMethod(Method.POST);
-            request2.setEndpoint("mail/send");
-            request2.setBody(mail.build());
-            Response response = sg.api(request2);
-    
-            System.out.println("SendGrid response status code: " + response.getStatusCode());
-            System.out.println("SendGrid response body: " + response.getBody());
-            System.out.println("SendGrid response headers: " + response.getHeaders());
-    
-            Map<String, String> responseBody = new HashMap<>();
-            if (response.getStatusCode() == 202) {
-                System.out.println("Recovery email sent successfully to: " + email);
-                responseBody.put("message", "Recovery email sent successfully");
-                return ResponseEntity.ok(responseBody);
-            } else {
-                System.out.println("Failed to send recovery email to: " + email);
-                responseBody.put("message", "Failed to send recovery email");
-                return ResponseEntity.status(response.getStatusCode()).body(responseBody);
-            }
-        } catch (IOException e) {
-            System.out.println("Exception occurred while sending recovery email to: " + email);
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send recovery email", e);
+public ResponseEntity<Map<String, String>> sendRecoveryEmail(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
+    User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+    // Log the email address
+    System.out.println("Sending recovery email to: " + email);
+
+    // Generate a token for the user
+    String token = UUID.randomUUID().toString();
+    user.setToken(token);
+    userDao.save(user);
+
+    // Create the email content
+    String recoveryLink = "http://localhost:4200/resetPassword?token=" + token;
+    String emailContent = "<html>"
+            + "<body>"
+            + "<h1>Password Recovery</h1>"
+            + "<p>Hi " + user.getEmail() + ",</p>"
+            + "<p>You have received this email because you requested to reset your password. Please click the link below to reset your password:</p>"
+            + "<p><a href=\"" + recoveryLink + "\">Reset Password</a></p>"
+            + "<p>If you did not request a password reset, please ignore this email.</p>"
+            + "<p>Thank you,</p>"
+            + "<p>Felipe y Alonso</p>"
+            + "</body>"
+            + "</html>";
+
+    // Send the email using SendGrid API
+    try {
+        Email from = new Email("felipeatle@hotmail.com", "Felipe Alcázar y Alonso Crespo");
+        String subject = "Password Recovery";
+        Email to = new Email(email);
+        Content content = new Content("text/html", emailContent);
+        Mail mail = new Mail(from, subject, to, content);
+
+        SendGrid sg = new SendGrid(sendGridApiKey);
+        Request request2 = new Request();
+        request2.setMethod(Method.POST);
+        request2.setEndpoint("mail/send");
+        request2.setBody(mail.build());
+        Response response = sg.api(request2);
+
+        System.out.println("SendGrid response status code: " + response.getStatusCode());
+        System.out.println("SendGrid response body: " + response.getBody());
+        System.out.println("SendGrid response headers: " + response.getHeaders());
+
+        Map<String, String> responseBody = new HashMap<>();
+        if (response.getStatusCode() == 202) {
+            System.out.println("Recovery email sent successfully to: " + email);
+            responseBody.put("message", "Recovery email sent successfully");
+            return ResponseEntity.ok(responseBody);
+        } else {
+            System.out.println("Failed to send recovery email to: " + email);
+            responseBody.put("message", "Failed to send recovery email");
+            return ResponseEntity.status(response.getStatusCode()).body(responseBody);
         }
+    } catch (IOException e) {
+        System.out.println("Exception occurred while sending recovery email to: " + email);
+        e.printStackTrace();
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send recovery email", e);
     }
+}
 
     @PostMapping("/resetPassword")
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
@@ -235,19 +245,45 @@ public class UserController {
 		this.userService.delete(email);
 	}
 	
-	@GetMapping("/checkCookie")
-	public String checkCookie(HttpServletRequest request) {
-		String fakeUserId = this.findCookie(request, "fakeUserId");
-		if (fakeUserId!=null) {
-			User user = this.userDao.findByCookie(fakeUserId);
-			if (user!=null) {
-				user.setToken(UUID.randomUUID().toString());
-				this.userDao.save(user);
-				return user.getToken();
-			}
-		}
-		return null;
-	}
+    @GetMapping("/checkCookie")
+    public ResponseEntity<Map<String, String>> checkCookie(HttpServletRequest request) {
+        String userId = this.findCookie(request, "userId");
+        if (userId != null) {
+            User user = this.userDao.findByCookie(userId);
+            if (user != null) {
+                user.setToken(UUID.randomUUID().toString());
+                this.userDao.save(user);
+                Map<String, String> response = new HashMap<>();
+                response.put("token", user.getToken());
+                return ResponseEntity.ok(response);
+            } else {
+                System.out.println("User not found for cookie: " + userId);
+            }
+        }
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        // Invalidate the session or token on the server
+        String userId = this.findCookie(request, "userId");
+        if (userId != null) {
+            User user = this.userDao.findByCookie(userId);
+            if (user != null) {
+                user.setToken(null);
+                user.setCookie(null);
+                this.userDao.save(user);
+            }
+        }
+
+        // Remove the cookie
+        Cookie cookie = new Cookie("userId", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
 	
 	@DeleteMapping("/clearAll")
 	public void clearAll(HttpServletRequest request) {

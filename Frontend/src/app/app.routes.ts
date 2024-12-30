@@ -5,8 +5,10 @@ import { GestorListasComponent } from './gestor-listas/gestor-listas.component';
 import { DetalleListaComponent } from './detalle-lista/detalle-lista.component';
 import { ContrasenaOlvidadaComponent } from './contrasena-olvidada/contrasena-olvidada.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { LandingPageComponent } from './landing-page/landing-page.component';
 
 export const routes: Routes = [
+    { path: '', component: LandingPageComponent },
     { path: 'Login', component: Login1Component },
     { path: 'Register', component: Register1Component },
     { path: 'GestorListas', component: GestorListasComponent },

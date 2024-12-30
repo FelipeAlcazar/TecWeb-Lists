@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { UserService } from '../user.service';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule, Validators, FormBuilder, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login1',
@@ -16,10 +17,10 @@ export class Login1Component {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  constructor(private formBuilder: FormBuilder, private userService: UserService) {    
+  constructor(private formBuilder: FormBuilder, private userService: UserService, private router: Router) {    
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      pwd: ['', [Validators.required, Validators.minLength(8), createPasswordStrengthValidator()]]
+      pwd: ['', [Validators.required]]
     });
   }
 
@@ -28,14 +29,17 @@ export class Login1Component {
     this.errorMessage = null; // Reset error message
     this.successMessage = null; // Reset success message
     if (this.loginForm.invalid) {
-      console.warn("Formulario invalido");
+      this.errorMessage = "Comprueba que has introducido correctamente los datos del formulario."; // Set error message
     } else {
       this.userService.login1(this.loginForm.controls['email'].value, this.loginForm.controls['pwd'].value).subscribe({
         next: (data) => {
           this.successMessage = '¡Inicio de sesión exitoso!';
+          this.router.navigate(['/GestorListas']); // Redirect to GestorListas
+
         },
         error: (error) => {
-          this.errorMessage = error.error.error || 'Ocurrió un error durante el inicio de sesión';
+          console.error('Login error:', error); // Log the error for debugging
+          this.errorMessage = error.error?.error || 'Usuario no encontrado o contraseña incorrecta.';
         }
       });
     }
@@ -46,19 +50,6 @@ export class Login1Component {
     this.loginForm.reset();
     this.errorMessage = null; // Reset error message
     this.successMessage = null; // Reset success message
+    this.router.navigate(['']); // Navigate to home page
   }
-}
-
-export function createPasswordStrengthValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value;
-    if (!value) {
-      return null;
-    }
-    const hasUpperCase = /[A-Z]+/.test(value);
-    const hasLowerCase = /[a-z]+/.test(value);
-    const hasNumeric = /[0-9]+/.test(value);
-    const passwordValid = hasUpperCase && hasLowerCase && hasNumeric;
-    return !passwordValid ? { passwordStrength: true } : null;
-  };
 }

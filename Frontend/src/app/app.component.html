@@ -1,13 +1,35 @@
 <div class="app-container">
-    <nav>
-        <a href="Login">Inicio</a>
-        |
-        <a href="Login">Login</a>
-        |
-        <a href="Register">Registro</a>
-        |
-        <a href="GestorListas">GestorListas</a>
-        <br>
-    </nav>
-    <router-outlet></router-outlet>
+  <nav *ngIf="isAuthenticated" class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">TecWeb-Lists</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Register">Registro</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="GestorListas">GestorListas</a>
+        </li>
+      </ul>
+      <div class="ml-auto">
+        <button class="btn btn-danger" (click)="logout()">Logout</button>
+        <div *ngIf="showLogoutConfirm" class="logout-confirm">
+          <p class="small-text">Cerrar sesion?</p>
+          <div class="button-group">
+            <button class="btn btn-danger btn-sm" (click)="confirmLogout()">Si</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelLogout()">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <router-outlet></router-outlet>
 </div>

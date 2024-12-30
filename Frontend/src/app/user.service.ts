@@ -7,16 +7,15 @@ import { throwError } from 'rxjs/internal/observable/throwError';
   providedIn: 'root'
 })
 export class UserService {
-  // This is the url of the web api that we will use to send the data to the server.
-  private apiUrl = "http://localhost:9000/users"
-  constructor(private http:HttpClient) { }
+  private apiUrl = "http://localhost:9000/users";
   
+  constructor(private http: HttpClient) { }
+
   register1(email: string, pw1: string, pw2: string) {
     let infoJSN = { email: email, pwd1: pw1, pwd2: pw2 };
     let urlRegister1 = this.apiUrl + "/registrar1";
     return this.http.post<{ token: string }>(urlRegister1, infoJSN, { observe: 'response', withCredentials: true }).pipe(
       tap((response: HttpResponse<{ token: string }>) => {
-        // Handle the token from the response body
         const token = response.body?.token;
         if (token) {
           localStorage.setItem('authToken', token);
@@ -42,4 +41,32 @@ export class UserService {
     );
   }
 
+  checkCookie() {
+    let urlCheckCookie = this.apiUrl + '/checkCookie';
+    return this.http.get<{ token: string } | null>(urlCheckCookie, { observe: 'response', withCredentials: true }).pipe(
+      tap((response: HttpResponse<{ token: string } | null>) => {
+        const token = response.body?.token;
+        if (token) {
+          localStorage.setItem('authToken', token);
+        }
+      }),
+      catchError((error) => {
+        console.error('Check cookie error:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  logout() {
+    let urlLogout = this.apiUrl + '/logout';
+    return this.http.post(urlLogout, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        // Optionally, clear any client-side cookies here
+      }),
+      catchError((error) => {
+        console.error('Logout error:', error);
+        return throwError(error);
+      })
+    );
+  }
 }

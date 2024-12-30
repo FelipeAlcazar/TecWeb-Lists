@@ -1,4 +1,7 @@
 <div class="container">
+  <div class="header">
+    <h1><strong>Iniciar Sesion</strong></h1>
+  </div>
   <form class='custom-form' [formGroup]="loginForm" (ngSubmit)="onSubmit()">      
     <div class="form-group">
       <label>Email</label>
@@ -28,9 +31,6 @@
       <div class="invalid-feedback" *ngIf="submitted && loginForm.controls['pwd'].errors">
         <div *ngIf="loginForm.controls['pwd'].errors?.['required']">La contraseña es obligatoria</div>
         <div *ngIf="loginForm.controls['pwd'].errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</div>
-        <div class="field-message" *ngIf="loginForm.controls['pwd'].errors?.['passwordStrength']">
-          Your password must have lower case, upper case and numeric characters.
-        </div>
       </div>
     </div>
     <div class="form-group text-center">

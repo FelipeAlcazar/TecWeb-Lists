@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../user.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register1',
@@ -18,7 +19,7 @@ export class Register1Component {
   passwordHasLowerCase = false;
   passwordHasNumeric = false;
 
-  constructor(private formBuilder: FormBuilder, private userService: UserService) {
+  constructor(private formBuilder: FormBuilder, private userService: UserService, private router: Router) {
     this.registerForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       pwd1: ['', [Validators.required, Validators.minLength(8), createPasswordStrengthValidator()]],
@@ -52,6 +53,7 @@ export class Register1Component {
     this.passwordHasUpperCase = false;
     this.passwordHasLowerCase = false;
     this.passwordHasNumeric = false;
+    this.router.navigate(['']); // Navigate to home page
   }
 
   updatePasswordRequirements() {

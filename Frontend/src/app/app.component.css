@@ -1,0 +1,20 @@
+.logout-confirm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .small-text {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 2px 5px;
+  }

@@ -1,79 +1,82 @@
 <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <form class="custom-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" formControlName="email" placeholder="Introduce tu email" class="form-control">
-            <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['email'].errors">
-              <div *ngIf="registerForm.controls['email'].errors?.['required']">El email es obligatorio</div>
-              <div *ngIf="registerForm.controls['email'].errors?.['email']">El formato del email no es correcto</div>
-            </div>
+  <div class="header">
+    <h1><strong>Registrarse en TecWeb-Lists</strong></h1>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form class="custom-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" formControlName="email" placeholder="Introduce tu email" class="form-control">
+          <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['email'].errors">
+            <div *ngIf="registerForm.controls['email'].errors?.['required']">El email es obligatorio</div>
+            <div *ngIf="registerForm.controls['email'].errors?.['email']">El formato del email no es correcto</div>
           </div>
-      
-          <div class="form-group">
-            <label for="password">Contraseña:</label>
-            <input type="password" formControlName="pwd1" placeholder="Introduce tu contraseña" class="form-control" (input)="updatePasswordRequirements()">
-            <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['pwd1'].errors">
-              <div *ngIf="registerForm.controls['pwd1'].errors?.['required']">La contraseña es obligatoria</div>
-              <div *ngIf="registerForm.controls['pwd1'].errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</div>
-              <div class="field-message" *ngIf="registerForm.controls['pwd1'].errors?.['passwordStrength']">
-                Your password must have lower case, upper case and numeric characters.
-              </div>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="confirmPassword">Confirmar Contraseña:</label>
-            <input type="password" formControlName="pwd2" placeholder="Confirma tu contraseña" class="form-control">
-            <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['pwd2'].errors">
-              <div *ngIf="registerForm.controls['pwd2'].errors?.['required']">La confirmación de la contraseña es obligatoria</div>
-              <div *ngIf="registerForm.controls['pwd2'].errors?.['mustMatch']">Las contraseñas no coinciden</div>
-            </div>
-          </div>
-      
-          <div class="form-group text-center">
-            <button class="btn btn-primary mr-1" [disabled]="registerForm.invalid">Registrar</button>
-            <button class="btn btn-secondary" type="reset" (click)="onReset()">Cancelar</button>
-          </div>
-      
-          <span *ngIf="respuestaOK" class="text-success" >Registro exitoso.</span>
-        </form>
-      </div>
-      <div class="col-md-4">
-        <div class="requirements">
-          <h5>Requisitos del Email:</h5>
-          <ul>
-            <li [class.valid]="!registerForm.controls['email'].errors?.['required']">
-              <span *ngIf="registerForm.controls['email'].errors?.['required']">❌</span>
-              <span *ngIf="!registerForm.controls['email'].errors?.['required']">✅</span>
-              Debe ser un email válido.
-            </li>
-          </ul>
-          <h5>Requisitos de la Contraseña:</h5>
-          <ul>
-            <li [class.valid]="!registerForm.controls['pwd1'].errors?.['minlength']">
-              <span *ngIf="registerForm.controls['pwd1'].errors?.['minlength']">❌</span>
-              <span *ngIf="!registerForm.controls['pwd1'].errors?.['minlength']">✅</span>
-              Debe tener al menos 8 caracteres.
-            </li>
-            <li [class.valid]="passwordHasUpperCase">
-              <span *ngIf="!passwordHasUpperCase">❌</span>
-              <span *ngIf="passwordHasUpperCase">✅</span>
-              Debe contener letras mayúsculas.
-            </li>
-            <li [class.valid]="passwordHasLowerCase">
-              <span *ngIf="!passwordHasLowerCase">❌</span>
-              <span *ngIf="passwordHasLowerCase">✅</span>
-              Debe contener letras minúsculas.
-            </li>
-            <li [class.valid]="passwordHasNumeric">
-              <span *ngIf="!passwordHasNumeric">❌</span>
-              <span *ngIf="passwordHasNumeric">✅</span>
-              Debe contener números.
-            </li>
-          </ul>
         </div>
+    
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <input type="password" formControlName="pwd1" placeholder="Introduce tu contraseña" class="form-control" (input)="updatePasswordRequirements()">
+          <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['pwd1'].errors">
+            <div *ngIf="registerForm.controls['pwd1'].errors?.['required']">La contraseña es obligatoria</div>
+            <div *ngIf="registerForm.controls['pwd1'].errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</div>
+            <div class="field-message" *ngIf="registerForm.controls['pwd1'].errors?.['passwordStrength']">
+              Your password must have lower case, upper case and numeric characters.
+            </div>
+          </div>
+        </div>
+    
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Contraseña:</label>
+          <input type="password" formControlName="pwd2" placeholder="Confirma tu contraseña" class="form-control">
+          <div class="invalid-feedback" *ngIf="submitted && registerForm.controls['pwd2'].errors">
+            <div *ngIf="registerForm.controls['pwd2'].errors?.['required']">La confirmación de la contraseña es obligatoria</div>
+            <div *ngIf="registerForm.controls['pwd2'].errors?.['mustMatch']">Las contraseñas no coinciden</div>
+          </div>
+        </div>
+    
+        <div class="form-group text-center">
+          <button class="btn btn-primary mr-1" [disabled]="registerForm.invalid">Registrar</button>
+          <button class="btn btn-secondary" type="reset" (click)="onReset()">Cancelar</button>
+        </div>
+    
+        <span *ngIf="respuestaOK" class="text-success">Registro exitoso.</span>
+      </form>
+    </div>
+    <div class="col-md-4">
+      <div class="requirements">
+        <h5>Requisitos del Email:</h5>
+        <ul class="inline-list">
+          <li [class.valid]="!registerForm.controls['email'].errors?.['required']">
+            <span *ngIf="registerForm.controls['email'].errors?.['required']">❌</span>
+            <span *ngIf="!registerForm.controls['email'].errors?.['required']">✅</span>
+            Debe ser un email válido.
+          </li>
+        </ul>
+        <h5>Requisitos de la Contraseña:</h5>
+        <ul class="inline-list">
+          <li [class.valid]="!registerForm.controls['pwd1'].errors?.['minlength']">
+            <span *ngIf="registerForm.controls['pwd1'].errors?.['minlength']">❌</span>
+            <span *ngIf="!registerForm.controls['pwd1'].errors?.['minlength']">✅</span>
+            Debe tener al menos 8 caracteres.
+          </li>
+          <li [class.valid]="passwordHasUpperCase">
+            <span *ngIf="!passwordHasUpperCase">❌</span>
+            <span *ngIf="passwordHasUpperCase">✅</span>
+            Debe contener letras mayúsculas.
+          </li>
+          <li [class.valid]="passwordHasLowerCase">
+            <span *ngIf="!passwordHasLowerCase">❌</span>
+            <span *ngIf="passwordHasLowerCase">✅</span>
+            Debe contener letras minúsculas.
+          </li>
+          <li [class.valid]="passwordHasNumeric">
+            <span *ngIf="!passwordHasNumeric">❌</span>
+            <span *ngIf="passwordHasNumeric">✅</span>
+            Debe contener números.
+          </li>
+        </ul>
       </div>
     </div>
   </div>
+</div>
