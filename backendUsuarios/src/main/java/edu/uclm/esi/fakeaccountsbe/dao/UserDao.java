@@ -9,4 +9,5 @@ import edu.uclm.esi.fakeaccountsbe.model.User;
 public interface UserDao extends CrudRepository<User, String> {
     User findByCookie(String cookie);
     Optional<User> findByToken(String token);
+    Optional<User> findByTokenPasswordReset(String tokenPasswordReset);
 }

@@ -49,7 +49,6 @@ import com.sendgrid.Response; // Add this import
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = { "http://localhost:4200" }, allowCredentials = "true")
 public class UserController {
 	@Autowired
 	private UserService userService;
@@ -124,78 +123,79 @@ public class UserController {
     }
 
     @PostMapping("/sendRecoveryEmail")
-public ResponseEntity<Map<String, String>> sendRecoveryEmail(@RequestBody Map<String, String> request) {
-    String email = request.get("email");
-    User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public ResponseEntity<Map<String, String>> sendRecoveryEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-    // Log the email address
-    System.out.println("Sending recovery email to: " + email);
+        // Log the email address
+        System.out.println("Sending recovery email to: " + email);
 
-    // Generate a token for the user
-    String token = UUID.randomUUID().toString();
-    user.setToken(token);
-    userDao.save(user);
+        // Generate a token for the user
+        String tokenPasswordReset = UUID.randomUUID().toString();
+        user.setTokenPasswordReset(tokenPasswordReset);
+        userDao.save(user);
 
-    // Create the email content
-    String recoveryLink = "http://localhost:4200/resetPassword?token=" + token;
-    String emailContent = "<html>"
-            + "<body>"
-            + "<h1>Password Recovery</h1>"
-            + "<p>Hi " + user.getEmail() + ",</p>"
-            + "<p>You have received this email because you requested to reset your password. Please click the link below to reset your password:</p>"
-            + "<p><a href=\"" + recoveryLink + "\">Reset Password</a></p>"
-            + "<p>If you did not request a password reset, please ignore this email.</p>"
-            + "<p>Thank you,</p>"
-            + "<p>Felipe y Alonso</p>"
-            + "</body>"
-            + "</html>";
+        // Create the email content
+        String recoveryLink = "http://localhost:4200/resetPassword?token=" + tokenPasswordReset;
+        String emailContent = "<html>"
+                + "<body>"
+                + "<h1>Password Recovery</h1>"
+                + "<p>Hi " + user.getEmail() + ",</p>"
+                + "<p>You have received this email because you requested to reset your password. Please click the link below to reset your password:</p>"
+                + "<p><a href=\"" + recoveryLink + "\">Reset Password</a></p>"
+                + "<p>If you did not request a password reset, please ignore this email.</p>"
+                + "<p>Thank you,</p>"
+                + "<p>Felipe y Alonso</p>"
+                + "</body>"
+                + "</html>";
 
-    // Send the email using SendGrid API
-    try {
-        Email from = new Email("felipeatle@hotmail.com", "Felipe Alcázar y Alonso Crespo");
-        String subject = "Password Recovery";
-        Email to = new Email(email);
-        Content content = new Content("text/html", emailContent);
-        Mail mail = new Mail(from, subject, to, content);
+        // Send the email using SendGrid API
+        try {
+            Email from = new Email("felipeatle@hotmail.com", "Felipe Alcázar y Alonso Crespo");
+            String subject = "Password Recovery";
+            Email to = new Email(email);
+            Content content = new Content("text/html", emailContent);
+            Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request2 = new Request();
-        request2.setMethod(Method.POST);
-        request2.setEndpoint("mail/send");
-        request2.setBody(mail.build());
-        Response response = sg.api(request2);
+            SendGrid sg = new SendGrid(sendGridApiKey);
+            Request request2 = new Request();
+            request2.setMethod(Method.POST);
+            request2.setEndpoint("mail/send");
+            request2.setBody(mail.build());
+            Response response = sg.api(request2);
 
-        System.out.println("SendGrid response status code: " + response.getStatusCode());
-        System.out.println("SendGrid response body: " + response.getBody());
-        System.out.println("SendGrid response headers: " + response.getHeaders());
+            System.out.println("SendGrid response status code: " + response.getStatusCode());
+            System.out.println("SendGrid response body: " + response.getBody());
+            System.out.println("SendGrid response headers: " + response.getHeaders());
 
-        Map<String, String> responseBody = new HashMap<>();
-        if (response.getStatusCode() == 202) {
-            System.out.println("Recovery email sent successfully to: " + email);
-            responseBody.put("message", "Recovery email sent successfully");
-            return ResponseEntity.ok(responseBody);
-        } else {
-            System.out.println("Failed to send recovery email to: " + email);
-            responseBody.put("message", "Failed to send recovery email");
-            return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+            Map<String, String> responseBody = new HashMap<>();
+            if (response.getStatusCode() == 202) {
+                System.out.println("Recovery email sent successfully to: " + email);
+                responseBody.put("message", "Recovery email sent successfully");
+                return ResponseEntity.ok(responseBody);
+            } else {
+                System.out.println("Failed to send recovery email to: " + email);
+                responseBody.put("message", "Failed to send recovery email");
+                return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+            }
+        } catch (IOException e) {
+            System.out.println("Exception occurred while sending recovery email to: " + email);
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send recovery email", e);
         }
-    } catch (IOException e) {
-        System.out.println("Exception occurred while sending recovery email to: " + email);
-        e.printStackTrace();
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send recovery email", e);
     }
-}
 
     @PostMapping("/resetPassword")
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
+        String tokenPasswordReset = request.get("token");
         String newPassword = request.get("password");
-        User user = userDao.findByToken(token).orElseThrow(() -> {
-            System.out.println("Invalid token: " + token);
+        User user = userDao.findByTokenPasswordReset(tokenPasswordReset).orElseThrow(() -> {
+            System.out.println("Invalid token: " + tokenPasswordReset);
             return new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
         });
     
         user.setPwd(newPassword);
+        user.setTokenPasswordReset(null); // Invalidate the reset token
         userDao.save(user);
     
         System.out.println("Password reset successful for user: " + user.getEmail());

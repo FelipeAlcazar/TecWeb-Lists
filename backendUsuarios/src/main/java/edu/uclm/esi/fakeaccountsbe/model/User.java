@@ -20,6 +20,9 @@ public class User {
 	@JsonIgnore @Column(length=36)
 	private String token;
 	
+	@JsonIgnore @Column(length=36)
+    private String tokenPasswordReset;
+
 	@JsonIgnore @Transient
 	private long creationTime;
 	
@@ -47,6 +50,12 @@ public class User {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	public String getTokenPasswordReset() {
+        return tokenPasswordReset;
+	}
+	public void setTokenPasswordReset(String tokenPasswordReset) {
+        this.tokenPasswordReset = tokenPasswordReset;
+    }
 	public void setCreationTime(long creationTime) {
 		this.creationTime = creationTime;		
 	}
