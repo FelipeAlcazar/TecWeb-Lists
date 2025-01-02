@@ -28,7 +28,6 @@ import edu.uclm.esi.fakeaccountsbe.services.UserService;
 
 @RestController
 @RequestMapping("pagos")
-@CrossOrigin("*")
 public class PagosController {
 	@Autowired
 	private PagosService pagosService;

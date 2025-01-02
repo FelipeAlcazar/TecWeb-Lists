@@ -20,6 +20,11 @@ export class GestorListasComponent {
   listaCreada : lista=new lista;
   constructor(private service : ListaService,private router: Router, public manager: ManagerService) { }
 
+
+  ngOnInit(): void {
+    
+  }
+
   agregarLista(){
     console.log("Voy a almacenar una lista nueva: " + this.nuevaLista);
 

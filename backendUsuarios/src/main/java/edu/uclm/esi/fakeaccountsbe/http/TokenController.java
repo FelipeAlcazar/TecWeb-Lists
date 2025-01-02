@@ -16,7 +16,6 @@ import edu.uclm.esi.fakeaccountsbe.services.UserService;
 
 @RestController
 @RequestMapping("tokens")
-@CrossOrigin("*")
 public class TokenController {
 
     @Autowired
@@ -24,10 +23,10 @@ public class TokenController {
 
     @PutMapping("/validar")
     public String validar(@RequestBody String token) {
-        if(new Random().nextBoolean()) {
-        	//La validación puede ir según el pago CUIDADO, esta puesto random
-            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
-        }
+        //if(new Random().nextBoolean()) {
+        //	//La validación puede ir según el pago CUIDADO, esta puesto random
+        //    throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+        //}
         User user = userService.findByToken(token);
         return user.getEmail();
     }

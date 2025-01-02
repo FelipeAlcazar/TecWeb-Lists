@@ -1,5 +1,5 @@
 <p>Tus listas de la compra</p>
-<input type="text" [(ngModel)]="nuevaLista" placeholder="Nuevo Elemento">
+<input type="text" [(ngModel)]="nuevaLista" placeholder="Nueva Lista">
 <button (click)="agregarLista()">Agregar</button>
 <p>Listas Creadas</p>
 <table *ngFor="let item of misListas; let i = index">

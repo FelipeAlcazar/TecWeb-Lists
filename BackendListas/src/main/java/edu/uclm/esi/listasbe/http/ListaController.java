@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("listas")
-@CrossOrigin("*")
 public class ListaController {
 	@Autowired
 	private ListaService listaService;
@@ -34,7 +33,7 @@ public class ListaController {
 		if (nombre.length() > 80)
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de la lista está limitado a 80 carácteres");
 	
-		String token = request.getHeader("token");
+		String token = request.getHeader("authToken");
 		if (token == null || token.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
 	

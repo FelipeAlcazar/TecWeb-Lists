@@ -14,9 +14,15 @@ export class ListaService {
   constructor(private http:HttpClient) { }
 
   crearLista(nombre:string){
+    const token = localStorage.getItem('authToken');
 
-    return this.http.post<any>(this.apiUrl+"/crearLista", nombre)
-  }
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authToken': token || ''
+  });
+
+  return this.http.post<any>(this.apiUrl + "/crearLista", nombre , { headers });
+}
 
   aniadirProducto(idLista: string, producto: producto): Observable<lista> {
     let apiUrlEspecifica= this.apiUrl+"/addProducto";
