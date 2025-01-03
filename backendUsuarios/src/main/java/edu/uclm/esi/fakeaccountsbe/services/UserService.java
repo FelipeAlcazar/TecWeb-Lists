@@ -70,6 +70,18 @@ public class UserService {
 	    return userOptional.get();
 	}
 
+	public User findByEmail(String email) {
+        Optional<User> userOptional = userDao.findById(email);
+        if (!userOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return userOptional.get();
+    }
+
+	public void save(User user) {
+        userDao.save(user);
+    }
+
 	public void delete(String email) {
 		//User user = this.users.remove(email);
 		//List<User> users = this.usersByIp.get(user.getIp());

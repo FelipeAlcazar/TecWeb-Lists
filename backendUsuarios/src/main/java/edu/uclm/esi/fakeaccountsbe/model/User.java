@@ -25,6 +25,9 @@ public class User {
 
 	@JsonIgnore @Transient
 	private long creationTime;
+
+	@Column(nullable = false)
+    private boolean hasPaid;
 	
 	//@JsonIgnore
 	@Transient
@@ -63,6 +66,15 @@ public class User {
 	public long getCreationTime() {
 		return creationTime;
 	}
+
+	public boolean isHasPaid() {
+        return hasPaid;
+    }
+
+    public void setHasPaid(boolean hasPaid) {
+        this.hasPaid = hasPaid;
+    }
+	
 	public void setIp(String ip) {
 		this.ip = ip;
 	}

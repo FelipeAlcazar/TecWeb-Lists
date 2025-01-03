@@ -42,7 +42,9 @@ export class Register1Component {
       ).subscribe((data) => {
         console.log(JSON.stringify(data));
         this.respuestaOK = true;
-        this.router.navigate(['/GestorListas']);
+        this.router.navigate(['/GestorListas']).then(() => {
+          window.location.reload();
+        });
       });
     }
   }

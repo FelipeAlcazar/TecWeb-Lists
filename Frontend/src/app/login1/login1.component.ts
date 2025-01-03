@@ -34,7 +34,9 @@ export class Login1Component {
       this.userService.login1(this.loginForm.controls['email'].value, this.loginForm.controls['pwd'].value).subscribe({
         next: (data) => {
           this.successMessage = '¡Inicio de sesión exitoso!';
-          this.router.navigate(['/GestorListas']); // Redirect to GestorListas
+          this.router.navigate(['/GestorListas']).then(() => {
+            window.location.reload();
+          });
 
         },
         error: (error) => {
