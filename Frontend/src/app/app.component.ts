@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, Register1Component, Login1Component, GestorListasComponent, DetalleListaComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -21,19 +21,18 @@ export class AppComponent {
   showLogoutConfirm = false;
 
   constructor(private userService: UserService, private router: Router) {
-    this.userService.checkCookie().subscribe(
-      token => {
-        if (token.body && token.body.token !== "") {
-          this.isAuthenticated = true;
-        } else {
-          this.isAuthenticated = false;
-        }
-      },
-      error => {
+
+  }
+
+  ngOnInit(): void {
+    this.userService.checkCookie()
+      .then(() => {
+        this.isAuthenticated = true;
+      })
+      .catch(error => {
         this.isAuthenticated = false;
         console.error('Check cookie error:', error);
-      }
-    );
+      });
   }
 
   logout() {

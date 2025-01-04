@@ -1,14 +1,18 @@
 package edu.uclm.esi.listasbe.http;
 
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,6 +43,25 @@ public class ListaController {
 	
 		return this.listaService.crearLista(nombre, token);
 	}
+
+	@GetMapping("/obtenerListas")
+	public Iterable<Lista> obtenerListas(HttpServletRequest request){
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+		
+		return this.listaService.obtenerListas(token);
+	}
+
+	@DeleteMapping("/eliminarLista/{idLista}")
+	public void eliminarLista(HttpServletRequest request, @PathVariable String idLista) {
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+
+		this.listaService.eliminarLista(token, idLista);
+	}
+	
 	
 	@PostMapping("/addProducto")
 	public Lista addProducto(HttpServletRequest request, @RequestBody Producto producto) {

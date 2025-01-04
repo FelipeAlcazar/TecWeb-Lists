@@ -1,6 +1,10 @@
 package edu.uclm.esi.listasbe.services;
 import edu.uclm.esi.listasbe.ws.wsListas;
 import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +60,40 @@ public class ListaService {
 		this.listaDao.save(lista);
 		this.listaDao.confirmar(lista.getId(), email);
 		return lista;
+	}
+
+	public Iterable<Lista> obtenerListas(String token) {
+		String email = this.proxy.validar(token);
+
+		if (email==null)
+			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+		
+		Iterable<String> listas_id = this.listaDao.getListasDe(email);
+		Iterable<Lista> listas = this.listaDao.findAllById(listas_id);
+
+		List<Lista> sortedListas = StreamSupport.stream(listas.spliterator(), false)
+        .sorted(Comparator.comparing(Lista::getNombre))
+        .collect(Collectors.toList());
+
+		return sortedListas;
+	}
+
+	public void eliminarLista(String token, String idLista) {
+		String email = this.proxy.validar(token);
+
+		if (email==null)
+			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+		
+		Optional<Lista> optLista=this.listaDao.findById(idLista);
+		
+		if(optLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
+		
+		Lista lista=optLista.get();
+		if(!lista.getEmailsUsuarios().contains(email))
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para eliminar esta lista");
+		
+		this.listaDao.delete(lista);
 	}
 	
 	public Lista addProducto(String idLista, Producto producto) {

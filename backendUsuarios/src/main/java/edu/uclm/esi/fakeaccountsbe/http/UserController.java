@@ -230,7 +230,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/getAllUsers")
-	public Iterable<User>  getAllUsers() {
+	public Iterable<User> getAllUsers() {
 		return this.userService.getAllUsers();
 	}
 	

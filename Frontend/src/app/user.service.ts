@@ -41,20 +41,24 @@ export class UserService {
     );
   }
 
-  checkCookie() {
-    let urlCheckCookie = this.apiUrl + '/checkCookie';
-    return this.http.get<{ token: string } | null>(urlCheckCookie, { observe: 'response', withCredentials: true }).pipe(
-      tap((response: HttpResponse<{ token: string } | null>) => {
-        const token = response.body?.token;
-        if (token) {
-          localStorage.setItem('authToken', token);
-        }
-      }),
-      catchError((error) => {
-        console.error('Check cookie error:', error);
-        return throwError(error);
-      })
-    );
+  checkCookie(): Promise<void> {
+    const urlCheckCookie = `${this.apiUrl}/checkCookie`;
+    return new Promise((resolve, reject) => {
+      this.http.get<{ token: string } | null>(urlCheckCookie, { observe: 'response', withCredentials: true }).pipe(
+        tap((response: HttpResponse<{ token: string } | null>) => {
+          const token = response.body?.token;
+          if (token) {
+            localStorage.setItem('authToken', token);
+          }
+          resolve();
+        }),
+        catchError((error) => {
+          console.error('Check cookie error1:', error);
+          reject(error);
+          return throwError(error);
+        })
+      ).subscribe();
+    });
   }
 
   logout() {
