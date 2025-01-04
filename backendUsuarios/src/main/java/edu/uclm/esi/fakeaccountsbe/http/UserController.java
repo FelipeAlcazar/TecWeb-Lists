@@ -1,7 +1,7 @@
 package edu.uclm.esi.fakeaccountsbe.http;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -10,11 +10,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.sendgrid.SendGrid;
@@ -42,39 +38,38 @@ import edu.uclm.esi.fakeaccountsbe.services.UserService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Personalization;
-import com.sendgrid.Response; // Add this import
+import com.sendgrid.Response;
 
 @RestController
 @RequestMapping("users")
 public class UserController {
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserDao userDao;
 
     @Value("${sendgrid.api.key}")
     private String sendGridApiKey;
-	
+
     @PostMapping("/registrar1")
     public ResponseEntity<Map<String, String>> registrar1(HttpServletRequest req, HttpServletResponse res, @RequestBody CredencialesRegistro cr) {
         cr.comprobar();
         User user = new User();
         user.setEmail(cr.getEmail());
         user.setPwd(cr.getPwd1());
-        
+
         // Generate token
         String token = UUID.randomUUID().toString();
         user.setToken(token);
-        
+        user.setTokenCreationTime(Instant.now());
+
         // Generate cookie value
         String cookieValue = UUID.randomUUID().toString();
         user.setCookie(cookieValue);
-        
+
         // Set cookie
         Cookie cookie = new Cookie("userId", cookieValue);
         cookie.setMaxAge(3600 * 24 * 365); // 1 year
@@ -83,10 +78,10 @@ public class UserController {
         cookie.setPath("/");
 
         res.addCookie(cookie);
-        
+
         // Save user
         userDao.save(user);
-        
+
         // Return token in JSON format
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
@@ -115,12 +110,40 @@ public class UserController {
 
         user.setCookie(userId);
         user.setToken(UUID.randomUUID().toString());
+        user.setTokenCreationTime(Instant.now());
         this.userDao.save(user);
 
         // Return token in JSON format
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("token", user.getToken());
         return ResponseEntity.ok(responseBody);
+    }
+
+    @GetMapping("/checkCookie")
+    public ResponseEntity<Map<String, String>> checkCookie(HttpServletRequest request) {
+        String userId = this.findCookie(request, "userId");
+        if (userId != null) {
+            User user = this.userDao.findByCookie(userId);
+            if (user != null) {
+                Map<String, String> response = new HashMap<>();
+                response.put("token", user.getToken());
+                return ResponseEntity.ok(response);
+            } else {
+                System.out.println("User not found for cookie: " + userId);
+            }
+        }
+        return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/haspaid")
+    public ResponseEntity<Map<String, Boolean>> getHasPaid(@RequestHeader("token") String token) {
+        User user = userService.findByToken(token);
+        if (user == null || !token.equals(user.getToken())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido o no corresponde");
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("hasPaid", user.isHasPaid());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sendRecoveryEmail")
@@ -186,18 +209,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/haspaid")
-    public Map<String, Boolean> getHasPaid(@RequestHeader("token") String token) {
-        User user = userService.findByToken(token);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-    
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("hasPaid", user.isHasPaid());
-        return response;
-    }
-
     @PostMapping("/resetPassword")
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
         String tokenPasswordReset = request.get("token");
@@ -206,88 +217,16 @@ public class UserController {
             System.out.println("Invalid token: " + tokenPasswordReset);
             return new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
         });
-    
+
         user.setPwd(newPassword);
         user.setTokenPasswordReset(null); // Invalidate the reset token
         userDao.save(user);
-    
+
         System.out.println("Password reset successful for user: " + user.getEmail());
-    
+
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "Password reset successful");
         return ResponseEntity.ok(responseBody);
-    }
-	
-    private String findCookie(HttpServletRequest request, String name) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
-	
-	@GetMapping("/login2")
-	public User login2(HttpServletResponse response, @RequestParam String email, @RequestParam String pwd) {
-		User user = this.userService.find(email, pwd);
-		user.setToken(UUID.randomUUID().toString());
-		response.setHeader("token", user.getToken());
-		return user;
-	}
-	
-	@GetMapping("/login3/{email}")
-	public User login3(HttpServletResponse response, @PathVariable String email, @RequestParam String pwd) {
-		return this.login2(response, email, pwd);
-	}
-	
-	@GetMapping("/getAllUsers")
-	public Iterable<User> getAllUsers() {
-		return this.userService.getAllUsers();
-	}
-	
-	@DeleteMapping("/delete")
-	public void delete(HttpServletRequest request, @RequestParam String email, @RequestParam String pwd) {
-		User user = this.userService.find(email, pwd);
-		
-		String token = request.getHeader("token");
-		if (!token.equals(user.getToken()))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Token " + token + " inválido");
-		
-		this.userService.delete(email);
-	}
-	
-    @GetMapping("/checkCookie")
-    public ResponseEntity<Map<String, String>> checkCookie(HttpServletRequest request) {
-        String userId = this.findCookie(request, "userId");
-        if (userId != null) {
-            User user = this.userDao.findByCookie(userId);
-            if (user != null) {
-                // Check if the token is valid and not expired
-                if (isTokenValid(user.getToken())) {
-                    Map<String, String> response = new HashMap<>();
-                    response.put("token", user.getToken());
-                    return ResponseEntity.ok(response);
-                } else {
-                    // Generate a new token if the existing one is invalid or expired
-                    user.setToken(UUID.randomUUID().toString());
-                    this.userDao.save(user);
-                    Map<String, String> response = new HashMap<>();
-                    response.put("token", user.getToken());
-                    return ResponseEntity.ok(response);
-                }
-            } else {
-                System.out.println("User not found for cookie: " + userId);
-            }
-        }
-        return ResponseEntity.ok(null);
-    }
-    
-    private boolean isTokenValid(String token) {
-        // Implement your token validation logic here
-        // For example, check if the token is not null and not expired
-        return token != null && !token.isEmpty();
     }
 
     @PostMapping("/logout")
@@ -299,6 +238,7 @@ public class UserController {
             if (user != null) {
                 user.setToken(null);
                 user.setCookie(null);
+                user.setTokenCreationTime(null);
                 this.userDao.save(user);
             }
         }
@@ -311,39 +251,15 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
-	
-	@DeleteMapping("/clearAll")
-	public void clearAll(HttpServletRequest request) {
-		String sToken = request.getHeader("prime");
-		Integer token = Integer.parseInt(sToken);
-		if (!isPrime(token.intValue()))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Debes pasar un número primo en la cabecera");
-		if (sToken.length()!=3)
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El nº primo debe tener tres cifras");
-		this.userService.clearAll();
-	}
-	
-	private boolean isPrime(int n) {
-	    if (n <= 1) return false;
-	    for (int i = 2; i <= Math.sqrt(n); i++) {
-	        if (n % i == 0) return false;
-	    }
-	    return true;
-	}
+
+    private String findCookie(HttpServletRequest request, String name) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
