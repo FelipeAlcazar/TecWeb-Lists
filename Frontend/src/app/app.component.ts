@@ -24,67 +24,28 @@ export class AppComponent implements OnInit {
   hasPaid = false;
   showPaymentForm = false;
 
-  constructor(private userService: UserService, private pagosService: PagosService, private router: Router) {
-
-  }
-
-  ngOnInit(): void {
-    this.userService.checkCookie()
-      .then(() => {
-        this.isAuthenticated = true;
-          this.checkUserHasPaid(); // Check payment status after authentication
-      })
-      .catch(error => {
-        this.isAuthenticated = false;
-        console.error('Check cookie error:', error);
-      });
-  }
-
-  ngAfterViewInit() {
-    if (this.isAuthenticated) {
-      this.checkUserHasPaid();
-    }
-  }
-
-  checkUserHasPaid() {
-    this.userService.getUserHasPaid().subscribe(
-      response => {
-        this.hasPaid = response.body?.hasPaid || false;
-      },
-      error => {
-        console.error('Get user status error:', error);
-      }
-    );
-  }
-
-  subscribeToPremium() {
-    this.showPaymentForm = true;
-  }
-
-  onPaymentSuccess() {
-    this.showPaymentForm = false;
-    this.hasPaid = true;
-  }
-
-  onPaymentCancel() {
-    this.showPaymentForm = false;
-  }
+  constructor(private userService: UserService, private pagosService: PagosService, private router: Router) {}
 
   ngOnInit() {
-    if (this.isAuthenticated) {
+    this.userService.checkCookie().then(() => {
+      this.isAuthenticated = true;
       this.checkUserHasPaid();
-    }
+    }).catch(() => {
+      this.isAuthenticated = false;
+    });
   }
 
   checkUserHasPaid() {
-    this.userService.getUserHasPaid().subscribe(
-      response => {
-        this.hasPaid = response.body?.hasPaid || false;
-      },
-      error => {
-        console.error('Get user status error:', error);
-      }
-    );
+    if (this.isAuthenticated) {
+      this.userService.getUserHasPaid().subscribe(
+        response => {
+          this.hasPaid = response.body?.hasPaid || false;
+        },
+        error => {
+          console.error('Get user status error:', error);
+        }
+      );
+    }
   }
 
   subscribeToPremium() {

@@ -264,16 +264,30 @@ public class UserController {
         if (userId != null) {
             User user = this.userDao.findByCookie(userId);
             if (user != null) {
-                user.setToken(UUID.randomUUID().toString());
-                this.userDao.save(user);
-                Map<String, String> response = new HashMap<>();
-                response.put("token", user.getToken());
-                return ResponseEntity.ok(response);
+                // Check if the token is valid and not expired
+                if (isTokenValid(user.getToken())) {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("token", user.getToken());
+                    return ResponseEntity.ok(response);
+                } else {
+                    // Generate a new token if the existing one is invalid or expired
+                    user.setToken(UUID.randomUUID().toString());
+                    this.userDao.save(user);
+                    Map<String, String> response = new HashMap<>();
+                    response.put("token", user.getToken());
+                    return ResponseEntity.ok(response);
+                }
             } else {
                 System.out.println("User not found for cookie: " + userId);
             }
         }
         return ResponseEntity.ok(null);
+    }
+    
+    private boolean isTokenValid(String token) {
+        // Implement your token validation logic here
+        // For example, check if the token is not null and not expired
+        return token != null && !token.isEmpty();
     }
 
     @PostMapping("/logout")

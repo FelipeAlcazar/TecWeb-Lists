@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
-import { throwError } from 'rxjs/internal/observable/throwError';
+import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { catchError, tap, concatMap } from 'rxjs/operators';
+import { throwError, from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -49,11 +49,13 @@ export class UserService {
           const token = response.body?.token;
           if (token) {
             localStorage.setItem('authToken', token);
+            resolve();
+          } else {
+            reject('No token found');
           }
-          resolve();
         }),
         catchError((error) => {
-          console.error('Check cookie error1:', error);
+          console.error('Check cookie error:', error);
           reject(error);
           return throwError(error);
         })
@@ -62,29 +64,37 @@ export class UserService {
   }
 
   getUserHasPaid() {
-    const token = localStorage.getItem('authToken');
-    let urlGetUserStatus = this.apiUrl + '/haspaid';
-    return this.http.get<{ hasPaid: boolean }>(urlGetUserStatus, { 
-      observe: 'response', 
-      headers: { 'token': token || '' },
-      withCredentials: true 
-    }).pipe(
-      catchError((error) => {
-        console.error('Get user status error:', error);
-        return throwError(error);
+    return from(this.checkCookie()).pipe(
+      concatMap(() => {
+        const token = localStorage.getItem('authToken');
+        let urlGetUserStatus = this.apiUrl + '/haspaid';
+        return this.http.get<{ hasPaid: boolean }>(urlGetUserStatus, { 
+          observe: 'response', 
+          headers: new HttpHeaders({ 'token': token || '' }),
+          withCredentials: true 
+        }).pipe(
+          catchError((error) => {
+            console.error('Get user status error:', error);
+            return throwError(error);
+          })
+        );
       })
     );
   }
 
   logout() {
-    let urlLogout = this.apiUrl + '/logout';
-    return this.http.post(urlLogout, {}, { withCredentials: true }).pipe(
-      tap(() => {
-        // Optionally, clear any client-side cookies here
-      }),
-      catchError((error) => {
-        console.error('Logout error:', error);
-        return throwError(error);
+    return from(this.checkCookie()).pipe(
+      concatMap(() => {
+        let urlLogout = this.apiUrl + '/logout';
+        return this.http.post(urlLogout, {}, { withCredentials: true }).pipe(
+          tap(() => {
+            // Optionally, clear any client-side cookies here
+          }),
+          catchError((error) => {
+            console.error('Logout error:', error);
+            return throwError(error);
+          })
+        );
       })
     );
   }
