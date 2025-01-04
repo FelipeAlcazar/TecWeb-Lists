@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -7,20 +7,24 @@ import { Login1Component } from './login1/login1.component';
 import { GestorListasComponent } from './gestor-listas/gestor-listas.component';
 import { DetalleListaComponent } from './detalle-lista/detalle-lista.component';
 import { UserService } from './user.service';
+import { PagosService } from './pagos.service';
+import { PaymentComponent } from './payment/payment.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PaymentComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'TecWeb-Lists';
   isAuthenticated = false;
   showLogoutConfirm = false;
+  hasPaid = false;
+  showPaymentForm = false;
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(private userService: UserService, private pagosService: PagosService, private router: Router) {
 
   }
 
@@ -28,11 +32,72 @@ export class AppComponent {
     this.userService.checkCookie()
       .then(() => {
         this.isAuthenticated = true;
+          this.checkUserHasPaid(); // Check payment status after authentication
       })
       .catch(error => {
         this.isAuthenticated = false;
         console.error('Check cookie error:', error);
       });
+  }
+
+  ngAfterViewInit() {
+    if (this.isAuthenticated) {
+      this.checkUserHasPaid();
+    }
+  }
+
+  checkUserHasPaid() {
+    this.userService.getUserHasPaid().subscribe(
+      response => {
+        this.hasPaid = response.body?.hasPaid || false;
+      },
+      error => {
+        console.error('Get user status error:', error);
+      }
+    );
+  }
+
+  subscribeToPremium() {
+    this.showPaymentForm = true;
+  }
+
+  onPaymentSuccess() {
+    this.showPaymentForm = false;
+    this.hasPaid = true;
+  }
+
+  onPaymentCancel() {
+    this.showPaymentForm = false;
+  }
+
+  ngOnInit() {
+    if (this.isAuthenticated) {
+      this.checkUserHasPaid();
+    }
+  }
+
+  checkUserHasPaid() {
+    this.userService.getUserHasPaid().subscribe(
+      response => {
+        this.hasPaid = response.body?.hasPaid || false;
+      },
+      error => {
+        console.error('Get user status error:', error);
+      }
+    );
+  }
+
+  subscribeToPremium() {
+    this.showPaymentForm = true;
+  }
+
+  onPaymentSuccess() {
+    this.showPaymentForm = false;
+    this.hasPaid = true;
+  }
+
+  onPaymentCancel() {
+    this.showPaymentForm = false;
   }
 
   logout() {

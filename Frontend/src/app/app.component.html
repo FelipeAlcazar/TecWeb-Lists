@@ -10,6 +10,14 @@
           <a class="nav-link" href="GestorListas">GestorListas</a>
         </li>
       </ul>
+      <div class="d-flex align-items-center justify-content-center mx-auto">
+        <div *ngIf="!hasPaid && !showPaymentForm" class="premium-button">
+          <button class="btn btn-primary btn-sm" (click)="subscribeToPremium()">Subscribe to Premium</button>
+        </div>
+        <div *ngIf="hasPaid" class="premium-text">
+          <button class="btn btn-warning btn-sm" disabled>Premium</button>
+        </div>
+      </div>
       <div class="ml-auto">
         <button class="btn btn-danger" (click)="logout()">Logout</button>
         <div *ngIf="showLogoutConfirm" class="logout-confirm">
@@ -22,5 +30,8 @@
       </div>
     </div>
   </nav>
+  <div class="payment-overlay" *ngIf="showPaymentForm">
+    <app-payment (paymentSuccess)="onPaymentSuccess()" (paymentCancel)="onPaymentCancel()"></app-payment>
+  </div>
   <router-outlet></router-outlet>
 </div>

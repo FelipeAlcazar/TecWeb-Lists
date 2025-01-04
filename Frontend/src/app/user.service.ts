@@ -61,6 +61,21 @@ export class UserService {
     });
   }
 
+  getUserHasPaid() {
+    const token = localStorage.getItem('authToken');
+    let urlGetUserStatus = this.apiUrl + '/haspaid';
+    return this.http.get<{ hasPaid: boolean }>(urlGetUserStatus, { 
+      observe: 'response', 
+      headers: { 'token': token || '' },
+      withCredentials: true 
+    }).pipe(
+      catchError((error) => {
+        console.error('Get user status error:', error);
+        return throwError(error);
+      })
+    );
+  }
+
   logout() {
     let urlLogout = this.apiUrl + '/logout';
     return this.http.post(urlLogout, {}, { withCredentials: true }).pipe(
