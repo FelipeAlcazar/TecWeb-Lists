@@ -5,4 +5,9 @@
 <input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10"  />
 <br>
 <button (click)="aniadirProducto()">+ A&ntilde;iadir producto a lista</button>
+<table *ngFor="let item of misProductos; let i = index">
+    <tr>
+          <td> {{ item.nombre }} </td>
+    </tr>
+  </table>
 

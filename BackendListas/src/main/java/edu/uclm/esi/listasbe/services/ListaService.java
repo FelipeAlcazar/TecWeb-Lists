@@ -78,6 +78,24 @@ public class ListaService {
 		return sortedListas;
 	}
 
+	public Iterable<Producto> obtenerProductos(String token, String idLista) {
+		String email = this.proxy.validar(token);
+
+		if (email==null)
+			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+		Optional<Lista> optLista=this.listaDao.findById(idLista);
+		
+		if(optLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
+
+		System.out.println(optLista.get().getEmailsUsuarios());
+		if(!optLista.get().getEmailsUsuarios().contains(email))
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para ver esta lista");
+		
+		Lista lista=optLista.get();
+		return lista.getProductos();
+	}
+
 	public void eliminarLista(String token, String idLista) {
 		String email = this.proxy.validar(token);
 
@@ -108,7 +126,7 @@ public class ListaService {
 		producto.setLista(lista);
 		this.productoDao.save(producto);
 		
-		this.wsListas.notificar(idLista,producto);
+		//this.wsListas.notificar(idLista,producto);
 		return lista;
 	}
 	

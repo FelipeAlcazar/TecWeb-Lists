@@ -76,6 +76,18 @@ public class ListaController {
 		return this.listaService.addProducto(idLista, producto);
 	}
 
+	@GetMapping("/obtenerProductos")
+	public Iterable<Producto> obtenerProductos(HttpServletRequest request){
+		String idLista = request.getHeader("idLista");
+		if (idLista == null || idLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La idLista no puede estar vacío");
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+		
+		return this.listaService.obtenerProductos(token, idLista);
+	}
+
 
 	@PutMapping("/comprar")
 	public Producto comprar(@RequestBody Map<String, Object> compra) {

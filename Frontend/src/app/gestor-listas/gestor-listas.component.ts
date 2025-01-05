@@ -3,13 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ListaService } from '../lista.service';
 import { lista } from '../models/lista.model';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ManagerService } from '../manager.service';
 
 @Component({
   selector: 'app-gestor-listas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './gestor-listas.component.html',
   styleUrl: './gestor-listas.component.css',
 })
@@ -59,7 +59,7 @@ export class GestorListasComponent {
   }
   agregarProducto(indice: number) {
     this.manager.listaSeleccionada = this.misListas[indice];
-    this.router.navigate(['/DetalleLista']);
+    this.router.navigate(['/DetalleLista', this.misListas[indice].id]);
   }
 
   eliminarLista(indice: number) {

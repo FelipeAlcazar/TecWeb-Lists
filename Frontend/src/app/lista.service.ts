@@ -42,6 +42,20 @@ export class ListaService {
     );
   }
 
+  obtenerProductos(idLista: string): Observable<producto[]> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || '',
+          'idLista': idLista
+        });
+        return this.http.get<producto[]>(`${this.apiUrl}/obtenerProductos`, { headers });
+      })
+    );
+  }
+
   obtenerListas(): Observable<lista[]> {
     return from(this.userService.checkCookie()).pipe(
       switchMap(() => {
