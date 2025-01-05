@@ -229,6 +229,84 @@ public class UserController {
         return ResponseEntity.ok(responseBody);
     }
 
+    @PostMapping("/sendConfirmationEmail")
+    public ResponseEntity<Map<String, String>> sendConfirmationEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        System.out.println("Sending confirmation email to: " + email);
+
+        // Use the existing token
+        String confirmationToken = user.getToken();
+
+        // Create the email content
+        String confirmationLink = "http://localhost:4200/confirmEmail?token=" + confirmationToken;
+        String emailContent = "<html>"
+                + "<body>"
+                + "<h1>Email Confirmation</h1>"
+                + "<p>Hi " + user.getEmail() + ",</p>"
+                + "<p>Please click the link below to confirm your email address:</p>"
+                + "<p><a href=\"" + confirmationLink + "\">Confirm Email</a></p>"
+                + "<p>If you did not request this, please ignore this email.</p>"
+                + "<p>Thank you,</p>"
+                + "<p>Felipe y Alonso</p>"
+                + "</body>"
+                + "</html>";
+
+        // Send the email using SendGrid API
+        try {
+            Email from = new Email("felipeatle@hotmail.com", "Felipe Alcázar y Alonso Crespo");
+            String subject = "Email Confirmation";
+            Email to = new Email(email);
+            Content content = new Content("text/html", emailContent);
+            Mail mail = new Mail(from, subject, to, content);
+
+            SendGrid sg = new SendGrid(sendGridApiKey);
+            Request request2 = new Request();
+            request2.setMethod(Method.POST);
+            request2.setEndpoint("mail/send");
+            request2.setBody(mail.build());
+            Response response = sg.api(request2);
+
+            System.out.println("SendGrid response status code: " + response.getStatusCode());
+            System.out.println("SendGrid response body: " + response.getBody());
+            System.out.println("SendGrid response headers: " + response.getHeaders());
+
+            Map<String, String> responseBody = new HashMap<>();
+            if (response.getStatusCode() == 202) {
+                System.out.println("Confirmation email sent successfully to: " + email);
+                responseBody.put("message", "Confirmation email sent successfully");
+                return ResponseEntity.ok(responseBody);
+            } else {
+                System.out.println("Failed to send confirmation email to: " + email);
+                responseBody.put("message", "Failed to send confirmation email");
+                return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+            }
+        } catch (IOException e) {
+            System.out.println("Exception occurred while sending confirmation email to: " + email);
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send confirmation email", e);
+        }
+    }
+
+    @PostMapping("/confirmEmail")
+    public ResponseEntity<Map<String, String>> confirmEmail(@RequestBody Map<String, String> request) {
+        String confirmationToken = request.get("token");
+        User user = userDao.findByToken(confirmationToken).orElseThrow(() -> {
+            System.out.println("Invalid token: " + confirmationToken);
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
+        });
+
+        user.setConfirmed(true);
+        userDao.save(user);
+
+        System.out.println("Email confirmation successful for user: " + user.getEmail());
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "Email confirmation successful");
+        return ResponseEntity.ok(responseBody);
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         // Invalidate the session or token on the server

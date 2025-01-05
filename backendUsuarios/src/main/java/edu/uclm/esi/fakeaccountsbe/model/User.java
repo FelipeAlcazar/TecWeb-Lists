@@ -29,6 +29,9 @@ public class User {
     @Column(nullable = false)
     private boolean hasPaid;
 
+    @Column(nullable = false)
+    private boolean isConfirmed;
+
     @Transient
     private String ip;
 
@@ -81,6 +84,14 @@ public class User {
 
     public void setHasPaid(boolean hasPaid) {
         this.hasPaid = hasPaid;
+    }
+
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setConfirmed(boolean isConfirmed) {
+        this.isConfirmed = isConfirmed;
     }
 
     public void setIp(String ip) {

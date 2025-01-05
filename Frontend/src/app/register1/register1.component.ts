@@ -15,6 +15,7 @@ export class Register1Component {
   registerForm: FormGroup;
   submitted = false;
   respuestaOK = false;
+  emailConfirmationPending = false;
   passwordHasUpperCase = false;
   passwordHasLowerCase = false;
   passwordHasNumeric = false;
@@ -42,6 +43,15 @@ export class Register1Component {
       ).subscribe((data) => {
         console.log(JSON.stringify(data));
         this.respuestaOK = true;
+
+        // Send confirmation email
+        this.userService.sendConfirmationEmail(this.registerForm.controls['email'].value).subscribe((response) => {
+          console.log('Confirmation email sent:', response);
+          this.emailConfirmationPending = true;
+        }, (error) => {
+          console.error('Error sending confirmation email:', error);
+        });
+
         this.router.navigate(['/GestorListas']).then(() => {
           window.location.reload();
         });
@@ -53,6 +63,7 @@ export class Register1Component {
     this.submitted = false;
     this.registerForm.reset();
     this.respuestaOK = false;
+    this.emailConfirmationPending = false;
     this.passwordHasUpperCase = false;
     this.passwordHasLowerCase = false;
     this.passwordHasNumeric = false;

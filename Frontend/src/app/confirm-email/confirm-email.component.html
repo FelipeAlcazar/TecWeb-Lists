@@ -1,0 +1,12 @@
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div *ngIf="message" class="alert alert-success">
+          {{ message }}
+        </div>
+        <div *ngIf="error" class="alert alert-danger">
+          {{ error }}
+        </div>
+      </div>
+    </div>
+  </div>

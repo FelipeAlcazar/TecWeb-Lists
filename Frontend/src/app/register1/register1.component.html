@@ -21,7 +21,7 @@
             <div *ngIf="registerForm.controls['pwd1'].errors?.['required']">La contraseña es obligatoria</div>
             <div *ngIf="registerForm.controls['pwd1'].errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</div>
             <div class="field-message" *ngIf="registerForm.controls['pwd1'].errors?.['passwordStrength']">
-              Your password must have lower case, upper case and numeric characters.
+              Tu contraseña debe tener letras mayúsculas, minúsculas y caracteres numéricos.
             </div>
           </div>
         </div>
@@ -40,7 +40,9 @@
           <button class="btn btn-secondary" type="reset" (click)="onReset()">Cancelar</button>
         </div>
     
-        <span *ngIf="respuestaOK" class="text-success">Registro exitoso.</span>
+        <span *ngIf="respuestaOK && emailConfirmationPending" class="text-success">
+          Registro exitoso. Por favor, revisa tu correo electrónico para confirmar tu cuenta.
+        </span>
       </form>
     </div>
     <div class="col-md-4">

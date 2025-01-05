@@ -24,6 +24,32 @@ export class UserService {
     );
   }
 
+  sendConfirmationEmail(email: string) {
+    const urlSendConfirmationEmail = `${this.apiUrl}/sendConfirmationEmail`;
+    return this.http.post<{ message: string }>(urlSendConfirmationEmail, { email: email }, { observe: 'response', withCredentials: true }).pipe(
+      tap((response: HttpResponse<{ message: string }>) => {
+        console.log(response.body?.message);
+      }),
+      catchError((error) => {
+        console.error('Send confirmation email error:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  confirmEmail(token: string) {
+    const urlConfirmEmail = `${this.apiUrl}/confirmEmail`;
+    return this.http.post<{ message: string }>(urlConfirmEmail, { token: token }, { observe: 'response', withCredentials: true }).pipe(
+      tap((response: HttpResponse<{ message: string }>) => {
+        console.log(response.body?.message);
+      }),
+      catchError((error) => {
+        console.error('Confirm email error:', error);
+        return throwError(error);
+      })
+    );
+  }
+
   login1(email: string, pwd: string) {
     let info = { email: email, pwd: pwd };
     let urlLogin1 = this.apiUrl + '/login1';
