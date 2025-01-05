@@ -6,7 +6,7 @@ import { DetalleListaComponent } from './detalle-lista/detalle-lista.component';
 import { ContrasenaOlvidadaComponent } from './contrasena-olvidada/contrasena-olvidada.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
-//import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 
 export const routes: Routes = [
     { path: '', component: LandingPageComponent },
@@ -16,5 +16,5 @@ export const routes: Routes = [
     { path: 'DetalleLista/:id', component: DetalleListaComponent },
     { path: 'contrasenaOlvidada', component: ContrasenaOlvidadaComponent },
     { path: 'resetPassword', component: ResetPasswordComponent },
-    //{ path: 'confirmEmail', component: ConfirmEmailComponent }
+    { path: 'confirmEmail', component: ConfirmEmailComponent }
 ];
