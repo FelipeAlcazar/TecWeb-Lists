@@ -137,6 +137,7 @@ export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cerrarModal();
       },
       (error) => {
+        alert('Error al comprar producto: comprueba la cantidad comprada');
         console.error('Error al comprar el producto:', error);
       }
     );

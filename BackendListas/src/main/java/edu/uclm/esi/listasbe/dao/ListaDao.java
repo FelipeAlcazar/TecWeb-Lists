@@ -11,5 +11,7 @@ public interface ListaDao extends CrudRepository<Lista, String>{
 	
 	@Query(value="select lista_id from lista_emails_usuarios where email=:email and confirmado = TRUE", nativeQuery=true)
 	List<String> getListasDe(String email);
+	
+	int countByEmailsUsuarios_Email(String email);
 
 }

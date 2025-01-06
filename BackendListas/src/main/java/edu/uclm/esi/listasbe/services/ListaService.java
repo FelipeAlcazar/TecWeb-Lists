@@ -49,19 +49,28 @@ public class ListaService {
 		return lista;
 	}
 	*/
-	public Lista crearLista(String nombre, String token) {
-		String email = this.proxy.validar(token);
+    public Lista crearLista(String nombre, String token) {
+        String email = this.proxy.validar(token);
 
-		if (email==null)
-			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+        if (email == null)
+            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+        
+        // Check if the user has paid
+        boolean hasPaid = this.proxy.hasPaid(token);
 		
-		Lista lista = new Lista();
-		lista.setNombre(nombre);
-		EmailUsuario usuario = new EmailUsuario(email, true, true);
-		lista.addEmailUsuario(usuario);
-		this.listaDao.save(lista);
-		return lista;
-	}
+        // Check if the user has already created 2 lists if they haven't paid
+        if (!hasPaid) {
+            int listCount = this.listaDao.countByEmailsUsuarios_Email(email);
+            if (listCount >= 2) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Los usuarios no registrados o no han pagado solo pueden crear 2 listas.");
+            }
+        }
+        Lista lista = new Lista();
+        lista.setNombre(nombre);
+        lista.addEmailUsuario(new EmailUsuario(email, true, true)); // Add owner to the list of users
+        this.listaDao.save(lista);
+        return lista;
+    }
 
 	public Iterable<Lista> obtenerListas(String token) {
 		String email = this.proxy.validar(token);
@@ -156,32 +165,36 @@ public class ListaService {
 
 	}
 	
-	public Producto comprar(String token, String idProducto, float unidadesCompradas) {
-		String email = this.proxy.validar(token);
+	    public Producto comprar(String token, String idProducto, float unidadesCompradas) {
+        String email = this.proxy.validar(token);
 
-		if (email==null)
-			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
-		
-		Optional<Producto> optProducto=this.productoDao.findById(idProducto);
-		
-		if(optProducto.isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra el producto");
-		
-		Producto producto=optProducto.get();
-		float unidadesCompradasTotales=producto.getUnidadesCompradas()+unidadesCompradas;
-				
-		if(unidadesCompradasTotales>producto.getUnidadesPedidas())
+        if (email == null)
+            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+        
+        Optional<Producto> optProducto = this.productoDao.findById(idProducto);
+        
+        if (optProducto.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encuentra el producto");
+        
+        Producto producto = optProducto.get();
+        float unidadesCompradasTotales = producto.getUnidadesCompradas() + unidadesCompradas;
+                
+        if (unidadesCompradasTotales > producto.getUnidadesPedidas())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay suficientes unidades");
+        
+        Lista lista = producto.getLista();
+        
+        if (!lista.getEmailsUsuarios().contains(email))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos para comprar este producto");
 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No hay suficientes unidades");
-		Lista lista=producto.getLista();
-
-		if(!lista.getEmailsUsuarios().contains(email))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para comprar este producto");
-
-		this.productoDao.comprar(idProducto, unidadesCompradasTotales);
-		producto.setUnidadesCompradas(unidadesCompradasTotales);
-		return producto;
-	}
+        this.productoDao.comprar(idProducto, unidadesCompradasTotales);
+        producto.setUnidadesCompradas(unidadesCompradasTotales);
+        
+        // Notify WebSocket clients about the update
+        this.wsListas.notificar(lista.getId(), producto);
+        
+        return producto;
+    }
 
 	public void eliminarProducto(String token, String idProducto) {
 		String email = this.proxy.validar(token);

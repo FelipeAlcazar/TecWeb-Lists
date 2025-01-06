@@ -53,6 +53,7 @@ export class GestorListasComponent {
         this.misListas.push(this.listaCreada);
       },
       (error) => {
+        alert('Error al crear la lista: los usuarios no premium no pueden crear más de 2 listas');
         console.error('Error al crear la lista', error);
       }
     );
