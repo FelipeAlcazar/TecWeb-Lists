@@ -19,6 +19,7 @@ export class UserService {
         const token = response.body?.token;
         if (token) {
           localStorage.setItem('authToken', token);
+          localStorage.setItem('userEmail', email); // Store email
         }
       })
     );
@@ -58,6 +59,7 @@ export class UserService {
         const token = response.body?.token;
         if (token) {
           localStorage.setItem('authToken', token);
+          localStorage.setItem('userEmail', email); // Store email
         }
       }),
       catchError((error) => {
@@ -115,6 +117,8 @@ export class UserService {
         return this.http.post(urlLogout, {}, { withCredentials: true }).pipe(
           tap(() => {
             // Optionally, clear any client-side cookies here
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userEmail'); // Clear email
           }),
           catchError((error) => {
             console.error('Logout error:', error);
@@ -123,5 +127,9 @@ export class UserService {
         );
       })
     );
+  }
+
+  getCurrentUserEmail(): string | null {
+    return localStorage.getItem('userEmail');
   }
 }

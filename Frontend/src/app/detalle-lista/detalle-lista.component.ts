@@ -1,33 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { producto } from '../models/producto.model';
 import { ListaService } from '../lista.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ManagerService } from '../manager.service';
+import { UserService } from '../user.service'; // Import UserService
 
 @Component({
   selector: 'app-detalle-lista',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './detalle-lista.component.html',
-  styleUrl: './detalle-lista.component.css'
+  styleUrls: ['./detalle-lista.component.css']
 })
-export class DetalleListaComponent implements OnInit {
+export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevoProducto: string = '';
   unidadesPedidas: number = 0;
   unidadesCompradas: number = 0;
-  producto: producto = new producto;
+  producto: producto = new producto();
   idLista?: string = "";
   misProductos: producto[] = [];
   mostrarModal: boolean = false;
   indiceSeleccionado: number = 0;
   mostrarInvitarUsuario: boolean = false;
-  correoInvitado: string= '';
+  correoInvitado: string = '';
   mostrarEnlaceModal: boolean = false;
   enlaceInvitacion: string = '';
+  private ws: WebSocket | undefined;
 
-  constructor(private listaService: ListaService, public route: ActivatedRoute, private router: Router, private manager: ManagerService) {
+  constructor(
+    private listaService: ListaService,
+    public route: ActivatedRoute,
+    private router: Router,
+    private manager: ManagerService,
+    private userService: UserService // Inject UserService
+  ) {
     this.idLista = this.manager.listaSeleccionada?.id || ''; // Proporcionar un valor predeterminado
   }
 
@@ -52,6 +60,51 @@ export class DetalleListaComponent implements OnInit {
         }
       )
     }
+
+    this.connectWebSocket();
+  }
+
+  ngOnDestroy(): void {
+    if (this.ws) {
+      this.ws.close();
+    }
+  }
+
+  connectWebSocket(): void {
+    const email = this.userService.getCurrentUserEmail();
+    this.ws = new WebSocket(`ws://localhost:80/wsListas?email=${email}`);
+    console.log('WebSocket created for:', email);
+
+    this.ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.tipo === 'actualizacionDeLista' && message.idLista === this.idLista) {
+        // Handle the list update
+        this.updateProductList(message);
+      }
+    };
+
+    this.ws.onclose = (event) => {
+      console.log('WebSocket closed:', event);
+    };
+
+    this.ws.onerror = (event) => {
+      console.error('WebSocket error:', event);
+    };
+  }
+
+  updateProductList(message: any): void {
+    const updatedProduct = this.misProductos.find(p => p.nombre === message.nombre);
+    if (updatedProduct) {
+      updatedProduct.unidadesCompradas = message.unidadesCompradas;
+      updatedProduct.unidadesPedidas = message.unidadesPedidas;
+    } else {
+      const newProduct = new producto();
+      newProduct.id = message.id; // Ensure the id is set
+      newProduct.nombre = message.nombre;
+      newProduct.unidadesCompradas = message.unidadesCompradas;
+      newProduct.unidadesPedidas = message.unidadesPedidas;
+      this.misProductos.push(newProduct);
+    }
   }
 
   aniadirProducto() {
@@ -65,7 +118,7 @@ export class DetalleListaComponent implements OnInit {
       (error) => {
         console.error('Error al almacenar el producto:', error);
       }
-    );;
+    );
   }
 
   abrirModal(indice: number) {

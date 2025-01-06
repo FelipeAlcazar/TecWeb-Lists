@@ -96,23 +96,26 @@ public class ListaService {
 		return lista.getProductos();
 	}
 
-	public void eliminarLista(String token, String idLista) {
-		String email = this.proxy.validar(token);
+    public void eliminarLista(String token, String idLista) {
+        String email = this.proxy.validar(token);
 
-		if (email==null)
-			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
-		
-		Optional<Lista> optLista=this.listaDao.findById(idLista);
-		
-		if(optLista.isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
-		
-		Lista lista=optLista.get();
-		if(!lista.getEmailsUsuarios().contains(email))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para eliminar esta lista");
-		
-		this.listaDao.delete(lista);
-	}
+        if (email == null)
+            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+        
+        Optional<Lista> optLista = this.listaDao.findById(idLista);
+        
+        if (optLista.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encuentra la lista");
+        
+        Lista lista = optLista.get();
+        boolean isOwner = lista.getUsuarios().stream()
+            .anyMatch(usuario -> usuario.getEmail().equals(email) && usuario.isPropietario());
+        
+        if (!isOwner)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo el propietario puede eliminar esta lista");
+        
+        this.listaDao.delete(lista);
+    }
 	
 	public Lista addProducto(String idLista, Producto producto) {
 		Optional<Lista> optLista=this.listaDao.findById(idLista);
@@ -130,7 +133,7 @@ public class ListaService {
 		productoAux.setLista(lista);
 		this.productoDao.save(productoAux);
 		
-		//this.wsListas.notificar(idLista,producto);
+		this.wsListas.notificar(idLista,producto);
 		return lista;
 	}
 	

@@ -42,13 +42,16 @@ export class ResetPasswordComponent implements OnInit {
       console.warn("Formulario invalido");
       return;
     }
-
+  
     const password = this.resetForm.value.password;
     this.http.post('http://localhost:9000/users/resetPassword', { token: this.token, password }).subscribe(
       (response: any) => {
         console.log('Response from backend:', response); // Log the response
         this.successMessage = response.message; // Use the response message from the backend
         this.errorMessage = null; // Clear any previous error message
+        setTimeout(() => {
+          this.router.navigate(['/Login']); // Navigate to the Login page after a delay
+        }, 3000); // 3 seconds delay
       },
       error => {
         console.error('Error resetting password', error);

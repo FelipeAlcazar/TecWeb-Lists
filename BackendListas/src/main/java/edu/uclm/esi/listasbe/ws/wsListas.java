@@ -68,10 +68,12 @@ public class wsListas extends TextWebSocketHandler {
 		
 		List<String> listas=this.listaDao.getListasDe(email);
 		for (String idLista:listas) {
+
 			List<WebSocketSession> auxi=this.sessionsByIdLista.get(idLista);
 			if(auxi==null) {
 				auxi=new ArrayList<>();
 				auxi.add(session);
+
 			}else {
 				auxi.add(session);
 			}
@@ -80,30 +82,40 @@ public class wsListas extends TextWebSocketHandler {
 	}
 
 	public void notificar(String idLista, Producto producto) {
-		JSONObject jso=new JSONObject();
-		jso.put("tipo","actualizacionDeLista");
-		jso.put("idLista",idLista);
-		jso.put("unidadesCompradas", producto.getUnidadesCompradas());
-		jso.put("unidadesPedidas", producto.getUnidadesPedidas());
-		jso.put("nombre", producto.getNombre());
-		
-		TextMessage message=new TextMessage(jso.toString());
-		List<WebSocketSession> interesados=this.sessionsByIdLista.get(idLista);
-		
-		for(WebSocketSession target : interesados) {
-					
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								target.sendMessage(message);
-							}catch (IOException e){
-								//wsListas.this.sessions.remove(target.getId());
-							}
-						}
-					}).start();
-				}
-	}
+        System.out.println("Notificando");
+        JSONObject jso = new JSONObject();
+        jso.put("tipo", "actualizacionDeLista");
+        jso.put("idLista", idLista);
+        jso.put("id", producto.getId());
+        jso.put("unidadesCompradas", producto.getUnidadesCompradas());
+        jso.put("unidadesPedidas", producto.getUnidadesPedidas());
+        jso.put("nombre", producto.getNombre());
+        
+        TextMessage message = new TextMessage(jso.toString());
+        System.out.println("Notificando a " + idLista);
+        System.out.println(this.sessionsByIdLista + " sessions by lista");
+        List<WebSocketSession> interesados = this.sessionsByIdLista.get(idLista);
+        System.out.println("Interesados: " + interesados);
+        if (interesados != null) {
+            for (WebSocketSession target : interesados) {
+                if (target.isOpen()) {
+                    new Thread(() -> {
+                        try {
+                            target.sendMessage(message);
+                        } catch (IOException e) {
+                            System.err.println("Error sending message: " + e.getMessage());
+                        }
+                    }).start();
+                } else {
+                    System.out.println("Session is closed: " + target.getId());
+                    // Optionally remove the closed session from the map
+                    interesados.remove(target);
+                }
+            }
+        } else {
+            System.out.println("No interested sessions for list: " + idLista);
+        }
+    }
 	
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {

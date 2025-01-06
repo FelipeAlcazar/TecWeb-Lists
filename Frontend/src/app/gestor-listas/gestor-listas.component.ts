@@ -72,7 +72,12 @@ export class GestorListasComponent {
       },
       (error) => {
         console.error('Error al eliminar la lista', error);
+        if (error.status === 403) {
+          window.alert('Solo el propietario puede eliminar esta lista.');
+        } else {
+          window.alert('Error al eliminar la lista: ' + 'debes eliminar los productos primero.');
+        }
       }
-    )
+    );
   }
 }
