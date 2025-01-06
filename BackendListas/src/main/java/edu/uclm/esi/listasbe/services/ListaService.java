@@ -144,7 +144,7 @@ public class ListaService {
 		lista.addEmailUsuario(email);
 		this.listaDao.save(lista);
 		
-	    String url = "http://localhost:80/listas/aceptarInvitacion?email=" + email + "&lista=" + idLista;
+	    String url = "http://localhost:80/listas/aceptarInvitacion?email=" + email + "&idlista=" + idLista;
 		return url;
 
 	}

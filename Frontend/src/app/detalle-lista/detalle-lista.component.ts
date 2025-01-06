@@ -22,6 +22,10 @@ export class DetalleListaComponent implements OnInit {
   misProductos: producto[] = [];
   mostrarModal: boolean = false;
   indiceSeleccionado: number = 0;
+  mostrarInvitarUsuario: boolean = false;
+  correoInvitado: string= '';
+  mostrarEnlaceModal: boolean = false;
+  enlaceInvitacion: string = '';
 
   constructor(private listaService: ListaService, public route: ActivatedRoute, private router: Router, private manager: ManagerService) {
     this.idLista = this.manager.listaSeleccionada?.id || ''; // Proporcionar un valor predeterminado
@@ -95,5 +99,32 @@ export class DetalleListaComponent implements OnInit {
         console.error('Error al eliminar el producto:', error);
       }
     );
+  }
+
+  mostrarInvitarUsuarioModal() {
+    this.mostrarInvitarUsuario = true;
+  }
+
+  cerrarInvitarUsuarioModal() {
+    this.mostrarInvitarUsuario = false;
+  }
+
+  addInvitado() {
+    const email = this.correoInvitado;
+    this.listaService.addInvitado(this.idLista!, email).subscribe(
+      (response) => {
+        console.log('Invitado añadido correctamente:', response);
+        this.enlaceInvitacion = response;
+        this.cerrarInvitarUsuarioModal();
+        this.mostrarEnlaceModal = true;
+      },
+      (error) => {
+        console.error('Error al añadir el invitado:', error);
+      }
+    );
+  }
+
+  cerrarEnlaceModal() {
+    this.mostrarEnlaceModal = false;
   }
 }

@@ -9,6 +9,7 @@
     <input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10" />
   </div>
   <button (click)="aniadirProducto()">+ Añadir producto</button>
+  <button (click)="mostrarInvitarUsuarioModal()">Invitar Usuario</button>
   <table>
     <tr>
       <th>ID</th>
@@ -30,12 +31,35 @@
   </table>
 </div>
 
-<!-- Modal -->
+<!-- Modal para comprar producto -->
 <div *ngIf="mostrarModal" class="modal">
   <div class="modal-content">
     <span class="close" (click)="cerrarModal()">&times;</span>
     <label for="unidadesCompradas">Unidades a comprar:</label>
     <input [(ngModel)]="unidadesCompradas" type="number" min="0" />
     <button (click)="comprarProducto(indiceSeleccionado, unidadesCompradas)">Comprar</button>
+  </div>
+</div>
+
+<!-- Modal para invitar usuario -->
+<div *ngIf="mostrarInvitarUsuario" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="cerrarInvitarUsuarioModal()">&times;</span>
+    <label for="correoInvitado">Correo del usuario a invitar:</label>
+    <input [(ngModel)]="correoInvitado" #correoInvitadoInput="ngModel" type="email" placeholder="Correo electrónico" required email />
+    <div *ngIf="correoInvitadoInput.invalid && (correoInvitadoInput.dirty || correoInvitadoInput.touched)" class="error">
+      <div *ngIf="correoInvitadoInput.errors?.['required']">El correo es obligatorio.</div>
+      <div *ngIf="correoInvitadoInput.errors?.['email']">Formato de correo no válido.</div>
+    </div>
+    <button (click)="addInvitado()" [disabled]="correoInvitadoInput.invalid">Invitar</button>
+  </div>
+</div>
+
+<!-- Modal para mostrar enlace de invitación -->
+<div *ngIf="mostrarEnlaceModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="cerrarEnlaceModal()">&times;</span>
+    <p>Enlace de invitación:</p>
+    <a [href]="enlaceInvitacion" target="_blank">{{ enlaceInvitacion }}</a>
   </div>
 </div>

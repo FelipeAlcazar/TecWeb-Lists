@@ -1,6 +1,7 @@
 package edu.uclm.esi.listasbe.http;
 
 import java.util.Map;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,11 +120,14 @@ public class ListaController {
 	    return this.listaService.addInvitado(idLista, email);
 	}
 	
-	//Hacerlo con el copilot
-	@PostMapping("/aceptarInvitacion")
-	public void aceptarInvitacion(HttpServletResponse response, @RequestBody String email) {
-		//Ella lo hace de esta forma, hay que crear el sendRedirect
-		//this.listaService.sendRedirect("http://localhost:6200");
+	@GetMapping("/aceptarInvitacion")
+	public void aceptarInvitacion(HttpServletResponse response, @RequestParam String email, @RequestParam String idlista) {
+		this.listaService.aceptarInvitacion(idlista, email);
+		try {
+			response.sendRedirect("http://localhost:4200");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

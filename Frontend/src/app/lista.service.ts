@@ -107,4 +107,18 @@ export class ListaService {
       })
     );
   }
+
+  addInvitado(idLista: string, email: string): Observable<string> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || '',
+          'idLista': idLista
+        });
+        return this.http.post(`${this.apiUrl}/addInvitado`, email, { headers, responseType: 'text'});
+      })
+    );
+  }
 }
