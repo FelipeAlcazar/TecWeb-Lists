@@ -90,11 +90,23 @@ public class ListaController {
 
 
 	@PutMapping("/comprar")
-	public Producto comprar(@RequestBody Map<String, Object> compra) {
+	public Producto comprar(HttpServletRequest request, @RequestBody Map<String, Object> compra) {
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
 		String idProducto=compra.get("idProducto").toString();
-		float unidadesCompradas=(float) compra.get("unidadesCompradas");
+		float unidadesCompradas=Float.parseFloat(compra.get("unidadesCompradas").toString());
 		
-		return this.listaService.comprar(idProducto, unidadesCompradas);
+		return this.listaService.comprar(token, idProducto, unidadesCompradas);
+	}
+
+	@DeleteMapping("/eliminarProducto/{idProducto}")
+	public void eliminarProducto(HttpServletRequest request, @PathVariable String idProducto) {
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+
+		this.listaService.eliminarProducto(token, idProducto);
 	}
 	
 	@PostMapping("/addInvitado")

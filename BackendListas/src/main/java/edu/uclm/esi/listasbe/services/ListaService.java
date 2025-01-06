@@ -145,9 +145,54 @@ public class ListaService {
 
 	}
 	
-	public Producto comprar(String idProducto, float unidadesCompradas) {
-		// TODO Auto-generated method stub
-		return null;
+	public Producto comprar(String token, String idProducto, float unidadesCompradas) {
+		String email = this.proxy.validar(token);
+
+		if (email==null)
+			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+		
+		Optional<Producto> optProducto=this.productoDao.findById(idProducto);
+		
+		if(optProducto.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra el producto");
+		
+		Producto producto=optProducto.get();
+		float unidadesCompradasTotales=producto.getUnidadesCompradas()+unidadesCompradas;
+				
+		if(unidadesCompradasTotales>producto.getUnidadesPedidas())
+
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No hay suficientes unidades");
+		Lista lista=producto.getLista();
+
+		
+		if(!lista.getEmailsUsuarios().contains(email))
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para comprar este producto");
+
+
+		this.productoDao.comprar(idProducto, unidadesCompradasTotales);
+		producto.setUnidadesCompradas(unidadesCompradasTotales);
+		return producto;
+	}
+
+	public void eliminarProducto(String token, String idProducto) {
+		String email = this.proxy.validar(token);
+
+		if (email==null)
+			throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED);
+		
+		Optional<Producto> optProducto=this.productoDao.findById(idProducto);
+		
+		if(optProducto.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra el producto");
+		
+		Producto producto=optProducto.get();
+		Lista lista=producto.getLista();
+		
+		if(!lista.getEmailsUsuarios().contains(email))
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para eliminar este producto");
+		
+		this.productoDao.delete(producto);
+		lista.remove(producto);
 	}
 	
 	public void aceptarInvitacion(String idLista, String email) {

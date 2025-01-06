@@ -2,12 +2,26 @@
 <input [(ngModel)]="nuevoProducto" placeholder="agregar producto" />
 <br>
 <label for="unidadesPedidas">Unidades a comprar (0-10):</label>
-<input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10"  />
+<input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10" />
 <br>
 <button (click)="aniadirProducto()">+ A&ntilde;iadir producto a lista</button>
-<table *ngFor="let item of misProductos; let i = index">
-    <tr>
-          <td> {{ item.nombre }} </td>
-    </tr>
-  </table>
+<table>
+  <tr *ngFor="let item of misProductos; let i = index">
+    <td>{{ item.id }}</td>
+    <td>{{ item.nombre }}</td>
+    <td>{{ item.unidadesCompradas }}</td>
+    <td>{{ item.unidadesPedidas }}</td>
+    <td><button (click)="abrirModal(i)">Comprar</button></td>
+    <td><button (click)="eliminarProducto(i)">Eliminar</button></td>
+  </tr>
+</table>
 
+<!-- Modal -->
+<div *ngIf="mostrarModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="cerrarModal()">&times;</span>
+    <label for="unidadesCompradas">Unidades a comprar:</label>
+    <input [(ngModel)]="unidadesCompradas" type="number" min="0" />
+    <button (click)="comprarProducto(indiceSeleccionado, unidadesCompradas)">Comprar</button>
+  </div>
+</div>

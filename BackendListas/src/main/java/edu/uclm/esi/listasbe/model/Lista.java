@@ -66,6 +66,10 @@ public class Lista {
 	public void add(Producto producto) {
 		this.productos.add(producto);
 	}
+
+	public void remove(Producto producto) {
+		this.productos.remove(producto);
+	}
     public void addEmailUsuario(String email) {
         if (email == null || email.isEmpty())
             throw new IllegalArgumentException("El email no puede estar vacío");

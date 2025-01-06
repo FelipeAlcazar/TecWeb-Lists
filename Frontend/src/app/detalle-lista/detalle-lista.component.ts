@@ -20,6 +20,8 @@ export class DetalleListaComponent {
   producto : producto = new producto;
   idLista? : string="";
   misProductos : producto[] = [];
+  mostrarModal: boolean = false;
+  indiceSeleccionado: number = 0;
   
 
   constructor(private listaService: ListaService, public route: ActivatedRoute){
@@ -44,14 +46,48 @@ export class DetalleListaComponent {
 
   aniadirProducto(){
     console.log('voy a almacenar producto');
-    this.producto.crearProducto (this.nuevoProducto,this.unidadesPedidas, this.unidadesCompradas);
+    this.producto.crearProducto(this.nuevoProducto,this.unidadesPedidas, this.unidadesCompradas);
     this.listaService.aniadirProducto(this.idLista!,this.producto).subscribe(
       (response) => {
         console.log('producto agregado correctamente:', response);
+        this.misProductos= response.productos;
       },
       (error) => {
         console.error('Error al almacenar el producto:', error);
       }
     );;
+  }
+
+  abrirModal(indice: number) {
+    this.indiceSeleccionado = indice;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal() {
+    this.mostrarModal = false;
+  }
+
+  comprarProducto(indice: number, unidades: number){
+    this.listaService.comprar(this.misProductos[indice].id, unidades).subscribe(
+      (response) => {
+        this.misProductos[indice] = response;
+        this.cerrarModal();
+      },
+      (error) => {
+        console.error('Error al comprar el producto:', error);
+      }
+    );
+  }
+
+  eliminarProducto(indice: number){
+    console.log('voy a eliminar producto'+ this.misProductos[indice].id);
+    this.listaService.eliminarProducto(this.misProductos[indice].id).subscribe(
+      (response) => {
+        this.misProductos.splice(indice, 1);
+      },
+      (error) => {
+        console.error('Error al eliminar el producto:', error);
+      }
+    );
   }
 }

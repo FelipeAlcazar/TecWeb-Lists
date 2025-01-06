@@ -65,7 +65,13 @@ export class GestorListasComponent {
   eliminarLista(indice: number) {
     const idLista = this.misListas[indice].id;
     console.log('Voy a eliminar la lista con id: ' + idLista);
-    this.service.eliminarLista(idLista)
-    this.misListas.splice(indice, 1);
+    this.service.eliminarLista(idLista).subscribe(
+      (response) => {
+        this.misListas.splice(indice, 1);
+      },
+      (error) => {
+        console.error('Error al eliminar la lista', error);
+      }
+    )
   }
 }

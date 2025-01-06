@@ -81,4 +81,30 @@ export class ListaService {
       })
     );
   }
+
+  comprar(idProducto: String, unidadesCompradas: number): Observable<producto> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || ''
+        });
+        return this.http.put<any>(`${this.apiUrl}/comprar`, {idProducto, unidadesCompradas}, { headers });
+      })
+    );
+  }
+
+  eliminarProducto(idProducto: String): Observable<any> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || ''
+        });
+        return this.http.delete<any>(`${this.apiUrl}/eliminarProducto/${idProducto}`, { headers });
+      })
+    );
+  }
 }
