@@ -1,20 +1,34 @@
-<label for="nuevoProducto">Producto a añadir en la lista:</label>
-<input [(ngModel)]="nuevoProducto" placeholder="agregar producto" />
-<br>
-<label for="unidadesPedidas">Unidades a comprar (0-10):</label>
-<input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10" />
-<br>
-<button (click)="aniadirProducto()">+ A&ntilde;iadir producto a lista</button>
-<table>
-  <tr *ngFor="let item of misProductos; let i = index">
-    <td>{{ item.id }}</td>
-    <td>{{ item.nombre }}</td>
-    <td>{{ item.unidadesCompradas }}</td>
-    <td>{{ item.unidadesPedidas }}</td>
-    <td><button (click)="abrirModal(i)">Comprar</button></td>
-    <td><button (click)="eliminarProducto(i)">Eliminar</button></td>
-  </tr>
-</table>
+<div class="detalle-lista-section">
+  <h2>Detalle de la Lista</h2>
+  <div class="input-container">
+    <label for="nuevoProducto">Producto a añadir en la lista:</label>
+    <input [(ngModel)]="nuevoProducto" placeholder="Agregar producto" />
+  </div>
+  <div class="input-container">
+    <label for="unidadesPedidas">Unidades a comprar (0-10):</label>
+    <input [(ngModel)]="unidadesPedidas" type="number" min="0" max="10" />
+  </div>
+  <button (click)="aniadirProducto()">+ Añadir producto</button>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Unidades Compradas</th>
+      <th>Unidades Pedidas</th>
+      <th>Acciones</th>
+    </tr>
+    <tr *ngFor="let item of misProductos; let i = index">
+      <td>{{ item.id }}</td>
+      <td>{{ item.nombre }}</td>
+      <td>{{ item.unidadesCompradas }}</td>
+      <td>{{ item.unidadesPedidas }}</td>
+      <td>
+        <button (click)="abrirModal(i)">Comprar</button>
+        <button class="eliminar" (click)="eliminarProducto(i)">🗑️</button>
+      </td>
+    </tr>
+  </table>
+</div>
 
 <!-- Modal -->
 <div *ngIf="mostrarModal" class="modal">

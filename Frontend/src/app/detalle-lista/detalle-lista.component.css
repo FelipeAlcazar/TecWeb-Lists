@@ -1,41 +1,69 @@
+/* Estilo para la sección de detalle de la lista */
+.detalle-lista-section {
+  border: 2px solid #2196F3;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  background-color: #e3f2fd;
+}
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+h2 {
+  text-align: center;
+}
+
 /* Estilo para la tabla */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 18px;
-    text-align: left;
-  }
-  
-  /* Estilo para las filas de la tabla */
-  tr {
-    border-bottom: 1px solid #dddddd;
-  }
-  
-  /* Estilo para las celdas de la tabla */
-  td, th {
-    padding: 12px 15px;
-    width: 33.33%; /* Asegura que todas las columnas tengan el mismo ancho */
-  }
-  
-  /* Estilo para las filas alternas */
-  tr:nth-child(even) {
-    background-color: #f3f3f3;
-  }
-  
-  /* Estilo para las filas al pasar el ratón por encima */
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  /* Estilo para el encabezado de la tabla */
-  th {
-    background-color: #009879;
-    color: white;
-    text-align: left;
-  }
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
+  border: 2px solid black; /* Add border to the outer part of the table */
+  border-radius: 8px; /* Add rounded corners */
+  overflow: hidden; /* Ensure rounded corners are visible */
+  border-spacing: 0; /* Ensure no gaps between cells */
+}
 
-  /* Estilo para la ventana modal */
+/* Estilo para las filas de la tabla */
+tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+/* Estilo para las celdas de la tabla */
+td, th {
+  padding: 12px 15px;
+  width: 20%; /* Ajusta el ancho de las columnas */
+  border: 1px solid black; /* Change border color to black */
+}
+
+/* Estilo para las filas alternas */
+tr:nth-child(even) {
+  background-color: #f3f3f3; /* Light grey */
+}
+
+tr:nth-child(odd) {
+  background-color: #e0e0e0; /* Darker grey */
+}
+
+/* Estilo para las filas al pasar el ratón por encima */
+tr:hover {
+  background-color: #d1d1d1; /* Slightly darker grey */
+}
+
+/* Estilo para el encabezado de la tabla */
+th {
+  background-color: #009879;
+  color: white;
+  text-align: left;
+}
+
+/* Estilo para la ventana modal */
 .modal {
   display: block; /* Cambia a 'none' para ocultar la ventana modal por defecto */
   position: fixed;
@@ -71,4 +99,26 @@ table {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+button {
+  margin: 5px;
+  font-size: 0.8rem;
+  padding: 2px 5px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Rounded corners */
+}
+
+button.eliminar {
+  background-color: red;
+  color: white;
+  border: 1px solid darkred;
+}
+
+/* Center the "Añadir producto" button */
+.detalle-lista-section > button {
+  display: block;
+  margin: 0 auto;
 }

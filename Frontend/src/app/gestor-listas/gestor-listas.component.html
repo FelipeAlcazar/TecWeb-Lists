@@ -1,12 +1,19 @@
-<p>Tus listas de la compra</p>
-<input type="text" [(ngModel)]="nuevaLista" placeholder="Nueva Lista">
-<button (click)="agregarLista()">Agregar</button>
-<p>Listas Creadas</p>
-<table *ngFor="let item of misListas; let i = index">
-  <tr>
-        <td> {{ item.nombre }} </td>
-        <td>{{ item.id }}</td>
-        <td><button (click)="agregarProducto(i)">Agregar Producto</button></td>
-        <td><button (click)="eliminarLista(i)">Eliminar</button></td>
-  </tr>
-</table>
+<div class="list-creation-section">
+  <h2>Crear Lista</h2>
+  <div class="input-container">
+    <input type="text" [(ngModel)]="nuevaLista" placeholder="Nueva Lista">
+    <button (click)="agregarLista()">Agregar</button>
+  </div>
+</div>
+<div class="lists-created-section">
+  <h2>Listas Creadas</h2>
+  <div *ngFor="let item of misListas; let i = index" class="lista-section">
+    <div class="lista-header">
+      <h2>{{ item.nombre }}</h2>
+    </div>
+    <div class="lista-content">
+      <button (click)="agregarProducto(i)">Ver Lista</button>
+      <button class="eliminar" (click)="eliminarLista(i)">🗑️</button>
+    </div>
+  </div>
+</div>
