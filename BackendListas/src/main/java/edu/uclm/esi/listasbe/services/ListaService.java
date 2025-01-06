@@ -121,10 +121,14 @@ public class ListaService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
 		
 		Lista lista=optLista.get();
-		lista.add(producto);
+		Producto productoAux = new Producto();
+		productoAux.setNombre(producto.getNombre());
+		productoAux.setUnidadesPedidas(producto.getUnidadesPedidas());
+		productoAux.setUnidadesCompradas(0);
+		lista.add(productoAux);
 		
-		producto.setLista(lista);
-		this.productoDao.save(producto);
+		productoAux.setLista(lista);
+		this.productoDao.save(productoAux);
 		
 		//this.wsListas.notificar(idLista,producto);
 		return lista;
