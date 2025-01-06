@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.listasbe.dao.ListaDao;
 import edu.uclm.esi.listasbe.dao.ProductoDao;
+import edu.uclm.esi.listasbe.model.EmailUsuario;
 import edu.uclm.esi.listasbe.model.Lista;
 import edu.uclm.esi.listasbe.model.Producto;
 
@@ -56,9 +57,9 @@ public class ListaService {
 		
 		Lista lista = new Lista();
 		lista.setNombre(nombre);
-		lista.addEmailUsuario(email);
+		EmailUsuario usuario = new EmailUsuario(email, true, true);
+		lista.addEmailUsuario(usuario);
 		this.listaDao.save(lista);
-		this.listaDao.confirmar(lista.getId(), email);
 		return lista;
 	}
 
@@ -88,11 +89,10 @@ public class ListaService {
 		if(optLista.isEmpty())
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
 
-		System.out.println(optLista.get().getEmailsUsuarios());
-		if(!optLista.get().getEmailsUsuarios().contains(email))
+		Lista lista=optLista.get();
+		if(!lista.getEmailsUsuarios().contains(email))
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para ver esta lista");
 		
-		Lista lista=optLista.get();
 		return lista.getProductos();
 	}
 
@@ -141,7 +141,11 @@ public class ListaService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
 		
 		Lista lista=optLista.get();
-		lista.addEmailUsuario(email);
+		if(lista.getEmailsUsuarios().contains(email))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El email ya está en la lista");
+			
+		EmailUsuario usuario = new EmailUsuario(email, false, false);
+		lista.addEmailUsuario(usuario);
 		this.listaDao.save(lista);
 		
 	    String url = "http://localhost:80/listas/aceptarInvitacion?email=" + email + "&idlista=" + idLista;
@@ -168,10 +172,8 @@ public class ListaService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No hay suficientes unidades");
 		Lista lista=producto.getLista();
 
-		
 		if(!lista.getEmailsUsuarios().contains(email))
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"No tienes permisos para comprar este producto");
-
 
 		this.productoDao.comprar(idProducto, unidadesCompradasTotales);
 		producto.setUnidadesCompradas(unidadesCompradasTotales);
@@ -200,7 +202,22 @@ public class ListaService {
 	}
 	
 	public void aceptarInvitacion(String idLista, String email) {
-		this.listaDao.confirmar(idLista, email);
+		Optional<Lista> optLista=this.listaDao.findById(idLista);
+
+		if(optLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No se encuentra la lista");
+
+		Lista lista=optLista.get();
+		List<EmailUsuario> emailsUsuarios = lista.getUsuarios();
+		for (EmailUsuario emailUsuario : emailsUsuarios) {
+			if (emailUsuario.getEmail().equals(email)) {
+				emailUsuario.setConfirmado(true);
+				break;
+			}
+		}
+
+		this.listaDao.save(lista);
+
 	}
 
 }

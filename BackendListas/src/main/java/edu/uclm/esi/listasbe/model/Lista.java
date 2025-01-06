@@ -22,7 +22,7 @@ public class Lista {
 	private List<Producto> productos;
 	
 	@ElementCollection
-	private List<String> emailsUsuarios;
+	private List<EmailUsuario> emailsUsuarios;
 	
 	public Lista() {
 		this.id=UUID.randomUUID().toString();
@@ -56,10 +56,18 @@ public class Lista {
 	
 
 	public List<String> getEmailsUsuarios() {
-		return emailsUsuarios;
+		List<String> emails = new ArrayList<>();
+		for (EmailUsuario emailUsuario : this.emailsUsuarios) {
+			emails.add(emailUsuario.getEmail());
+		}
+		return emails;
 	}
 
-	public void setEmailsUsuarios(List<String> emailsUsuarios) {
+	public List<EmailUsuario> getUsuarios() {
+		return this.emailsUsuarios;
+	}
+
+	public void setEmailsUsuarios(List<EmailUsuario> emailsUsuarios) {
 		this.emailsUsuarios = emailsUsuarios;
 	}
 
@@ -70,10 +78,10 @@ public class Lista {
 	public void remove(Producto producto) {
 		this.productos.remove(producto);
 	}
-    public void addEmailUsuario(String email) {
-        if (email == null || email.isEmpty())
+    public void addEmailUsuario(EmailUsuario usuario) {
+        if (usuario == null)
             throw new IllegalArgumentException("El email no puede estar vacío");
-        this.emailsUsuarios.add(email);
+        this.emailsUsuarios.add(usuario);
     }
 	
 }
