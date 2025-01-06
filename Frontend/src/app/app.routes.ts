@@ -13,9 +13,9 @@ export const routes: Routes = [
     { path: 'Login', component: Login1Component },
     { path: 'Register', component: Register1Component },
     { path: 'GestorListas', component: GestorListasComponent },
-    { path: 'DetalleLista/:id', component: DetalleListaComponent },
+    { path: 'DetalleLista', component: DetalleListaComponent },
     { path: 'contrasenaOlvidada', component: ContrasenaOlvidadaComponent },
     { path: 'resetPassword', component: ResetPasswordComponent },
     { path: 'confirmEmail', component: ConfirmEmailComponent },
-    {path: '**', redirectTo: ''}
+    { path: '**', redirectTo: '' }
 ];

@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { producto } from '../models/producto.model';
 import { ListaService } from '../lista.service';
-import { ManagerService } from '../manager.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ManagerService } from '../manager.service';
 
 @Component({
   selector: 'app-detalle-lista',
@@ -13,25 +13,31 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   templateUrl: './detalle-lista.component.html',
   styleUrl: './detalle-lista.component.css'
 })
-export class DetalleListaComponent {
-  nuevoProducto : string='';
-  unidadesPedidas : number=0;
-  unidadesCompradas: number=0;
-  producto : producto = new producto;
-  idLista? : string="";
-  misProductos : producto[] = [];
+export class DetalleListaComponent implements OnInit {
+  nuevoProducto: string = '';
+  unidadesPedidas: number = 0;
+  unidadesCompradas: number = 0;
+  producto: producto = new producto;
+  idLista?: string = "";
+  misProductos: producto[] = [];
   mostrarModal: boolean = false;
   indiceSeleccionado: number = 0;
-  
 
-  constructor(private listaService: ListaService, public route: ActivatedRoute){
-    this.route.paramMap.subscribe(params => {
-      this.idLista = params.get('id') || ''; // Proporcionar un valor predeterminado
-      // Ahora puedes usar this.idLista para cargar los detalles de la lista
-    });
+  constructor(private listaService: ListaService, public route: ActivatedRoute, private router: Router, private manager: ManagerService) {
+    this.idLista = this.manager.listaSeleccionada?.id || ''; // Proporcionar un valor predeterminado
+  }
+
+  ngOnInit(): void {
+    if (!this.idLista) {
+      this.router.navigate(['/GestorListas']);
+    }
   }
 
   ngAfterViewInit(): void {
+    if (!this.idLista) {
+      return;
+    }
+
     if (typeof window !== 'undefined' && window.localStorage) {
       this.listaService.obtenerProductos(this.idLista!).subscribe(
         (productos) => {
@@ -44,13 +50,13 @@ export class DetalleListaComponent {
     }
   }
 
-  aniadirProducto(){
+  aniadirProducto() {
     console.log('voy a almacenar producto');
-    this.producto.crearProducto(this.nuevoProducto,this.unidadesPedidas, this.unidadesCompradas);
-    this.listaService.aniadirProducto(this.idLista!,this.producto).subscribe(
+    this.producto.crearProducto(this.nuevoProducto, this.unidadesPedidas, this.unidadesCompradas);
+    this.listaService.aniadirProducto(this.idLista!, this.producto).subscribe(
       (response) => {
         console.log('producto agregado correctamente:', response);
-        this.misProductos= response.productos;
+        this.misProductos = response.productos;
       },
       (error) => {
         console.error('Error al almacenar el producto:', error);
@@ -67,7 +73,7 @@ export class DetalleListaComponent {
     this.mostrarModal = false;
   }
 
-  comprarProducto(indice: number, unidades: number){
+  comprarProducto(indice: number, unidades: number) {
     this.listaService.comprar(this.misProductos[indice].id, unidades).subscribe(
       (response) => {
         this.misProductos[indice] = response;
@@ -79,8 +85,8 @@ export class DetalleListaComponent {
     );
   }
 
-  eliminarProducto(indice: number){
-    console.log('voy a eliminar producto'+ this.misProductos[indice].id);
+  eliminarProducto(indice: number) {
+    console.log('voy a eliminar producto' + this.misProductos[indice].id);
     this.listaService.eliminarProducto(this.misProductos[indice].id).subscribe(
       (response) => {
         this.misProductos.splice(indice, 1);

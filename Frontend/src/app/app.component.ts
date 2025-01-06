@@ -26,6 +26,10 @@ export class AppComponent implements OnInit {
     this.userService.checkCookie().then(() => {
       this.isAuthenticated = true;
       this.checkUserHasPaid();
+      this.redirectAuthenticatedUser();
+      if (this.router.url === '/') {
+        this.router.navigate(['/GestorListas']);
+      }
     }).catch(() => {
       this.isAuthenticated = false;
     });
@@ -41,6 +45,13 @@ export class AppComponent implements OnInit {
           console.error('Get user status error:', error);
         }
       );
+    }
+  }
+
+  redirectAuthenticatedUser() {
+    const currentUrl = this.router.url;
+    if (this.isAuthenticated && (currentUrl === '/Login' || currentUrl === '/Register')) {
+      this.router.navigate(['/GestorListas']);
     }
   }
 

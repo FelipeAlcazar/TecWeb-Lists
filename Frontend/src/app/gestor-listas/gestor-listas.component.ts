@@ -57,9 +57,10 @@ export class GestorListasComponent {
       }
     );
   }
+
   agregarProducto(indice: number) {
     this.manager.listaSeleccionada = this.misListas[indice];
-    this.router.navigate(['/DetalleLista', this.misListas[indice].id]);
+    this.router.navigate(['/DetalleLista']);
   }
 
   eliminarLista(indice: number) {
