@@ -84,3 +84,90 @@
   gap: 10px;
   margin-top: 20px;
 }
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+  .logout-confirm {
+    top: 40px; /* Ajustar la posición superior en pantallas pequeñas */
+    right: 5px; /* Ajustar la posición derecha en pantallas pequeñas */
+    width: 90%; /* Ajustar el ancho en pantallas pequeñas */
+  }
+
+  .navbar-nav {
+    flex-direction: column; /* Cambiar a columna en pantallas pequeñas */
+    align-items: flex-start;
+  }
+
+  .ml-auto {
+    justify-content: center; /* Centrar el contenido en pantallas pequeñas */
+    width: 100%;
+  }
+
+  .payment-form-container {
+    width: 90%; /* Ajustar el ancho en pantallas pequeñas */
+    padding: 15px; /* Ajustar el padding en pantallas pequeñas */
+  }
+
+  .button-group {
+    flex-direction: column; /* Cambiar a columna en pantallas pequeñas */
+    gap: 5px; /* Reducir el espacio entre botones en pantallas pequeñas */
+  }
+
+  .navbar-collapse {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .navbar-collapse.show {
+    max-height: 500px; /* Ajusta este valor según el contenido */
+    opacity: 1;
+  }
+}
+
+/* Media queries para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .logout-confirm {
+    top: 30px; /* Ajustar la posición superior en pantallas muy pequeñas */
+    right: 5px; /* Ajustar la posición derecha en pantallas muy pequeñas */
+    width: 100%; /* Ajustar el ancho en pantallas muy pequeñas */
+  }
+
+  .navbar-nav {
+    flex-direction: column; /* Cambiar a columna en pantallas muy pequeñas */
+    align-items: flex-start;
+  }
+
+  .ml-auto {
+    justify-content: center; /* Centrar el contenido en pantallas muy pequeñas */
+    width: 100%;
+  }
+
+  .navbar-collapse {
+    flex-direction: column; /* Cambiar a columna en pantallas muy pequeñas */
+    align-items: flex-start;
+  }
+
+  .payment-form-container {
+    width: 95%; /* Ajustar el ancho en pantallas muy pequeñas */
+    padding: 10px; /* Ajustar el padding en pantallas muy pequeñas */
+  }
+
+  .button-group {
+    flex-direction: column; /* Cambiar a columna en pantallas muy pequeñas */
+    gap: 5px; /* Reducir el espacio entre botones en pantallas muy pequeñas */
+  }
+
+  .navbar-collapse {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .navbar-collapse.show {
+    max-height: 500px; /* Ajusta este valor según el contenido */
+    opacity: 1;
+  }
+}

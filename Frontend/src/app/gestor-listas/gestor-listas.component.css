@@ -49,6 +49,7 @@ h2 {
     margin: 20px auto;
     background-color: #e8f5e9;
     width: 50%;
+    margin: 0 auto; /* Center the section */
 }
 .lists-created-section {
     border: 2px solid #2196F3;
@@ -61,4 +62,38 @@ h2 {
     display: inline-block;
     width: calc(33.33% - 40px);
     box-sizing: border-box;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1200px) {
+    .lists-created-section .lista-section {
+        width: calc(50% - 40px);
+    }
+}
+
+@media (max-width: 768px) {
+    .list-creation-section {
+        width: 80%;
+    }
+    .lists-created-section .lista-section {
+        width: calc(100% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    .list-creation-section {
+        padding: 10px;
+        margin: 10px auto; /* Center the section */
+    }
+    .lists-created-section {
+        padding: 10px;
+        margin: 10px;
+    }
+    button {
+        font-size: 0.7rem;
+        padding: 2px 4px;
+    }
 }

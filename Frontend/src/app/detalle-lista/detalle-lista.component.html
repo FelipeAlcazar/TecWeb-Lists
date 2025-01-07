@@ -10,25 +10,25 @@
   </div>
   <button (click)="aniadirProducto()">+ Añadir producto</button>
   <button (click)="mostrarInvitarUsuarioModal()">Invitar Usuario</button>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Unidades Compradas</th>
-      <th>Unidades Pedidas</th>
-      <th>Acciones</th>
-    </tr>
-    <tr *ngFor="let item of misProductos; let i = index">
-      <td>{{ item.id }}</td>
-      <td>{{ item.nombre }}</td>
-      <td>{{ item.unidadesCompradas }}</td>
-      <td>{{ item.unidadesPedidas }}</td>
-      <td>
-        <button (click)="abrirModal(i)">Comprar</button>
-        <button class="eliminar" (click)="eliminarProducto(i)">🗑️</button>
-      </td>
-    </tr>
-  </table>
+  <div class="table-container">
+    <table>
+      <tr>
+        <th>Nombre</th>
+        <th>Unidades Compradas</th>
+        <th>Unidades Pedidas</th>
+        <th>Acciones</th>
+      </tr>
+      <tr *ngFor="let item of misProductos; let i = index">
+        <td>{{ item.nombre }}</td>
+        <td>{{ item.unidadesCompradas }}</td>
+        <td>{{ item.unidadesPedidas }}</td>
+        <td>
+          <button (click)="abrirModal(i)">Comprar</button>
+          <button class="eliminar" (click)="eliminarProducto(i)">🗑️</button>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 <!-- Modal para comprar producto -->

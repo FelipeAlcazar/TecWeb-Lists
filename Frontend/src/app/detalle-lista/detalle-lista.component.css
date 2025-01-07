@@ -3,8 +3,11 @@
   border: 2px solid #2196F3;
   border-radius: 10px;
   padding: 20px;
-  margin: 20px;
+  margin: 80px;
   background-color: #e3f2fd;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar horizontalmente */
 }
 .input-container {
   display: flex;
@@ -12,14 +15,22 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
+  flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
 }
 h2 {
   text-align: center;
 }
 
 /* Estilo para la tabla */
+.table-container {
+  width: 100%;
+  max-width: 800px; /* Limitar el ancho máximo de la tabla */
+  margin: 0 auto; /* Centrar la tabla */
+  overflow-x: auto; /* Permitir desplazamiento horizontal en pantallas pequeñas */
+}
 table {
   width: 100%;
+  max-width: 800px; /* Limitar el ancho máximo de la tabla */
   border-collapse: collapse;
   margin: 20px 0;
   font-size: 18px;
@@ -38,7 +49,7 @@ tr {
 /* Estilo para las celdas de la tabla */
 td, th {
   padding: 12px 15px;
-  width: 20%; /* Ajusta el ancho de las columnas */
+  width: auto; /* Ajusta el ancho de las columnas automáticamente */
   border: 1px solid black; /* Change border color to black */
 }
 
@@ -84,6 +95,8 @@ th {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
+  max-width: 600px; /* Limitar el ancho máximo */
+  box-sizing: border-box; /* Asegurar que el padding se incluya en el ancho total */
 }
 
 /* Estilo para el botón de cerrar */
@@ -121,4 +134,52 @@ button.eliminar {
 .detalle-lista-section > button {
   display: block;
   margin: 0 auto;
+}
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+  .input-container {
+    flex-direction: column; /* Cambiar a columna en pantallas pequeñas */
+    align-items: stretch;
+  }
+
+  table, th, td {
+    font-size: 14px; /* Reducir el tamaño de la fuente en pantallas pequeñas */
+  }
+
+  .modal-content {
+    width: 90%; /* Aumentar el ancho en pantallas pequeñas */
+    margin: 20% auto; /* Ajustar el margen superior */
+  }
+}
+
+/* Media queries para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .input-container {
+    gap: 5px; /* Reducir el espacio entre elementos */
+  }
+
+  table, th, td {
+    font-size: 12px; /* Reducir aún más el tamaño de la fuente */
+  }
+
+  .modal-content {
+    width: 95%; /* Aumentar el ancho en pantallas muy pequeñas */
+    margin: 25% auto; /* Ajustar el margen superior */
+    padding: 10px; /* Reducir el padding en pantallas muy pequeñas */
+  }
+
+  .modal-content label, .modal-content input, .modal-content button {
+    width: 100%; /* Hacer que los elementos ocupen todo el ancho */
+    box-sizing: border-box; /* Asegurar que el padding se incluya en el ancho total */
+    margin-bottom: 10px; /* Añadir margen inferior para separar los elementos */
+  }
+
+  .modal-content input {
+    padding: 5px; /* Reducir el padding de los inputs */
+  }
+
+  .modal-content button {
+    padding: 10px; /* Aumentar el padding de los botones */
+  }
 }
