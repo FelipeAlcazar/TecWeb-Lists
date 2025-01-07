@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -118,7 +119,7 @@ public class wsListas extends TextWebSocketHandler {
     }
     
     @Override
-    public void afterConnectionClosed(WebSocketSession session, Throwable exception) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         this.sessions.remove(session.getId());
         // Remove the session from sessionsByIdLista
         for (List<WebSocketSession> sessionList : this.sessionsByIdLista.values()) {
