@@ -69,7 +69,7 @@ public class SeleniumTest {
     @Order(1)
     public void testScenario() {
 
-        String email1="pepe1111234@pepe.com";
+        String email1="pepe12345@pepe.com";
         String pwd1= "Pepe12345";
         registerAndLogin(driverPepe, waitPepe, email1, pwd1 );
 
@@ -88,7 +88,7 @@ public class SeleniumTest {
         addItemToList(driverPepe, waitPepe, "patatas fritas", 2);
 
         // Step 6: Ana registers, confirms her account, and logs in
-        String email2 = "ana1111234@ana.com";
+        String email2 = "ana12345@ana.com";
         String pwd2 = "Ana12345";
         registerAndLogin(driverAna, waitAna, email2, pwd2);
         confirmAccount(email2);
