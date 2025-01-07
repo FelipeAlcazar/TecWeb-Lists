@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import edu.uclm.esi.listasbe.model.EmailUsuario;
 import edu.uclm.esi.listasbe.model.Lista;
 import edu.uclm.esi.listasbe.model.Producto;
 import edu.uclm.esi.listasbe.services.ListaService;
@@ -65,6 +66,10 @@ public class ListaController {
 	
 	@PostMapping("/addProducto")
 	public Lista addProducto(HttpServletRequest request, @RequestBody Producto producto) {
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+
 		if (producto.getNombre().isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El nombre no puede estar vacío");
 		
@@ -73,7 +78,7 @@ public class ListaController {
 
 		String idLista=request.getHeader("idLista"); //Nos deben pasar el idLista en la petición (en el postman está en los headers)
 		
-		return this.listaService.addProducto(idLista, producto);
+		return this.listaService.addProducto(token, idLista, producto);
 	}
 
 	@GetMapping("/obtenerProductos")
@@ -117,6 +122,30 @@ public class ListaController {
 	    String idLista = request.getHeader("idLista"); // Nos deben pasar el idLista en la petición (en el postman está en los headers)
 	    
 	    return this.listaService.addInvitado(idLista, email);
+	}
+
+	@GetMapping("/obtenerInvitados")
+	public Iterable<EmailUsuario> obtenerInvitados(HttpServletRequest request){
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+		String idLista = request.getHeader("idLista");
+		if (idLista == null || idLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La idLista no puede estar vacío");
+		
+		return this.listaService.obtenerInvitados(token, idLista);
+	}
+
+	@DeleteMapping("/eliminarInvitado/{email}")
+	public void eliminarInvitado(HttpServletRequest request, @PathVariable String email){
+		String token = request.getHeader("authToken");
+		if (token == null || token.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token no puede estar vacío");
+		String idLista = request.getHeader("idLista");
+		if (idLista == null || idLista.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La idLista no puede estar vacío");
+		
+		this.listaService.eliminarInvitado(token, idLista, email);
 	}
 	
 	@GetMapping("/aceptarInvitacion")

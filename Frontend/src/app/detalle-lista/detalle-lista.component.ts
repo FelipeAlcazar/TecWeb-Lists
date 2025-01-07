@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ManagerService } from '../manager.service';
 import { UserService } from '../user.service'; // Import UserService
+import { EmailUsuario } from '../models/emailusuario.model';
 
 @Component({
   selector: 'app-detalle-lista',
@@ -27,6 +28,7 @@ export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
   correoInvitado: string = '';
   mostrarEnlaceModal: boolean = false;
   enlaceInvitacion: string = '';
+  invitados: EmailUsuario[] = [];
   private ws: WebSocket | undefined;
 
   constructor(
@@ -156,11 +158,23 @@ export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   mostrarInvitarUsuarioModal() {
+    this.obtenerInvitados();
     this.mostrarInvitarUsuario = true;
   }
 
   cerrarInvitarUsuarioModal() {
     this.mostrarInvitarUsuario = false;
+  }
+
+  obtenerInvitados() {
+    this.listaService.obtenerInvitados(this.idLista!).subscribe(
+      (invitados) => {
+        this.invitados = invitados;
+      },
+      (error) => {
+        console.error('Error al obtener los invitados:', error);
+      }
+    );
   }
 
   addInvitado() {
@@ -174,6 +188,18 @@ export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       (error) => {
         console.error('Error al añadir el invitado:', error);
+      }
+    );
+  }
+
+  eliminarInvitado(indice: number) {
+    const email = this.invitados[indice].email;
+    this.listaService.eliminarInvitado(this.idLista!, email).subscribe(
+      (response) => {
+        this.invitados.splice(indice, 1);
+      },
+      (error) => {
+        console.error('Error al eliminar el invitado:', error);
       }
     );
   }

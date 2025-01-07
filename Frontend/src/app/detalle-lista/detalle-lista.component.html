@@ -52,6 +52,14 @@
       <div *ngIf="correoInvitadoInput.errors?.['email']">Formato de correo no válido.</div>
     </div>
     <button (click)="addInvitado()" [disabled]="correoInvitadoInput.invalid">Invitar</button>
+    
+    <h3>Usuarios Invitados:</h3>
+    <ul>
+      <li *ngFor="let invitado of invitados; let i = index">
+        {{ invitado.email }} - {{ invitado.propietario ? 'Propietario' : 'Invitado' }} - {{ invitado.confirmado ? 'Confirmado' : 'No Confirmado' }}
+        <button (click)="eliminarInvitado(i)" [disabled]="invitado.propietario">Eliminar</button>
+      </li>
+    </ul>
   </div>
 </div>
 

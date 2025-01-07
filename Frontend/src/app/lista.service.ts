@@ -5,6 +5,7 @@ import { producto } from './models/producto.model';
 import { Observable, from } from 'rxjs';
 import { UserService } from './user.service';
 import { switchMap } from 'rxjs/operators';
+import { EmailUsuario } from './models/emailusuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -118,6 +119,34 @@ export class ListaService {
           'idLista': idLista
         });
         return this.http.post(`${this.apiUrl}/addInvitado`, email, { headers, responseType: 'text'});
+      })
+    );
+  }
+
+  obtenerInvitados(idLista: string): Observable<EmailUsuario[]> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || '',
+          'idLista': idLista
+        });
+        return this.http.get<EmailUsuario[]>(`${this.apiUrl}/obtenerInvitados`, { headers });
+      })
+    );
+  }
+
+  eliminarInvitado(idLista: string, email: string): Observable<any> {
+    return from(this.userService.checkCookie()).pipe(
+      switchMap(() => {
+        const token = localStorage.getItem('authToken');
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authToken': token || '',
+          'idLista': idLista
+        });
+        return this.http.delete<any>(`${this.apiUrl}/eliminarInvitado/${email}`, { headers });
       })
     );
   }
