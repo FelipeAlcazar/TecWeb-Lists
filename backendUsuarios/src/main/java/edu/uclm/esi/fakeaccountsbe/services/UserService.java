@@ -67,6 +67,22 @@ public class UserService {
         return userOptional.get();
     }
 
+    public User findByCookie(String cookie) {
+        User user = userDao.findByCookie(cookie);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cookie inválido");
+        }
+        return user;
+    }
+
+    public User findByTokenPasswordReset(String tokenPasswordReset) {
+        Optional<User> userOptional = userDao.findByTokenPasswordReset(tokenPasswordReset);
+        if (!userOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token de restablecimiento de contraseña inválido");
+        }
+        return userOptional.get();
+    }
+
     public void save(User user) {
         userDao.save(user);
     }

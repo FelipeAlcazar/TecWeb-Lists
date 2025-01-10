@@ -48,8 +48,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserDao userDao;
+    // Remove UserDao injection
+    // @Autowired
+    // private UserDao userDao;
 
     @Value("${sendgrid.api.key}")
     private String sendGridApiKey;
@@ -79,8 +80,8 @@ public class UserController {
 
         res.addCookie(cookie);
 
-        // Save user
-        userDao.save(user);
+        // Save user using UserService
+        userService.save(user);
 
         // Return token in JSON format
         Map<String, String> response = new HashMap<>();
@@ -111,7 +112,7 @@ public class UserController {
         user.setCookie(userId);
         user.setToken(UUID.randomUUID().toString());
         user.setTokenCreationTime(Instant.now());
-        this.userDao.save(user);
+        this.userService.save(user);
 
         // Return token in JSON format
         Map<String, String> responseBody = new HashMap<>();
@@ -123,7 +124,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> checkCookie(HttpServletRequest request) {
         String userId = this.findCookie(request, "userId");
         if (userId != null) {
-            User user = this.userDao.findByCookie(userId);
+            User user = this.userService.findByCookie(userId);
             if (user != null) {
                 Map<String, String> response = new HashMap<>();
                 response.put("token", user.getToken());
@@ -149,7 +150,7 @@ public class UserController {
     @PostMapping("/sendRecoveryEmail")
     public ResponseEntity<Map<String, String>> sendRecoveryEmail(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.findByEmail(email);
 
         // Log the email address
         System.out.println("Sending recovery email to: " + email);
@@ -157,7 +158,7 @@ public class UserController {
         // Generate a token for the user
         String tokenPasswordReset = UUID.randomUUID().toString();
         user.setTokenPasswordReset(tokenPasswordReset);
-        userDao.save(user);
+        userService.save(user);
 
         // Create the email content
         String recoveryLink = "http://localhost:4200/resetPassword?token=" + tokenPasswordReset;
@@ -213,14 +214,11 @@ public class UserController {
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
         String tokenPasswordReset = request.get("token");
         String newPassword = request.get("password");
-        User user = userDao.findByTokenPasswordReset(tokenPasswordReset).orElseThrow(() -> {
-            System.out.println("Invalid token: " + tokenPasswordReset);
-            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
-        });
+        User user = userService.findByTokenPasswordReset(tokenPasswordReset);
 
         user.setPwd(newPassword);
         user.setTokenPasswordReset(null); // Invalidate the reset token
-        userDao.save(user);
+        userService.save(user);
 
         System.out.println("Password reset successful for user: " + user.getEmail());
 
@@ -232,7 +230,7 @@ public class UserController {
     @PostMapping("/sendConfirmationEmail")
     public ResponseEntity<Map<String, String>> sendConfirmationEmail(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        User user = userDao.findById(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.findByEmail(email);
 
         System.out.println("Sending confirmation email to: " + email);
 
@@ -292,13 +290,10 @@ public class UserController {
     @PostMapping("/confirmEmail")
     public ResponseEntity<Map<String, String>> confirmEmail(@RequestBody Map<String, String> request) {
         String confirmationToken = request.get("token");
-        User user = userDao.findByToken(confirmationToken).orElseThrow(() -> {
-            System.out.println("Invalid token: " + confirmationToken);
-            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid token");
-        });
+        User user = userService.findByToken(confirmationToken);
 
         user.setConfirmed(true);
-        userDao.save(user);
+        userService.save(user);
 
         System.out.println("Email confirmation successful for user: " + user.getEmail());
 
@@ -312,12 +307,12 @@ public class UserController {
         // Invalidate the session or token on the server
         String userId = this.findCookie(request, "userId");
         if (userId != null) {
-            User user = this.userDao.findByCookie(userId);
+            User user = this.userService.findByCookie(userId);
             if (user != null) {
                 user.setToken(null);
                 user.setCookie(null);
                 user.setTokenCreationTime(null);
-                this.userDao.save(user);
+                this.userService.save(user);
             }
         }
 
