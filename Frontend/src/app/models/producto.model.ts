@@ -11,9 +11,9 @@ export class producto {
       this.unidadesCompradas = 0;
     }
   
-    crearProducto(nombre: string, unidadesPedidas: number, unidadesCompradas: number) {
+    crearProducto(nombre: string, unidadesPedidas: number) {
       this.nombre = nombre;
       this.unidadesPedidas = unidadesPedidas;
-      this.unidadesCompradas = unidadesCompradas;
+      this.unidadesCompradas = 0;
     }
   }

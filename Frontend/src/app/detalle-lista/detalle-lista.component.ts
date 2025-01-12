@@ -18,7 +18,6 @@ import { EmailUsuario } from '../models/emailusuario.model';
 export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevoProducto: string = '';
   unidadesPedidas: number = 0;
-  unidadesCompradas: number = 0;
   producto: producto = new producto();
   idLista?: string = "";
   misProductos: producto[] = [];
@@ -111,7 +110,7 @@ export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   aniadirProducto() {
     console.log('voy a almacenar producto');
-    this.producto.crearProducto(this.nuevoProducto, this.unidadesPedidas, this.unidadesCompradas);
+    this.producto.crearProducto(this.nuevoProducto, this.unidadesPedidas);
     this.listaService.aniadirProducto(this.idLista!, this.producto).subscribe(
       (response) => {
         console.log('producto agregado correctamente:', response);
