@@ -58,3 +58,19 @@ Para ejecutar las pruebas con JMeter, sigue estos pasos:
 1. Navega al directorio [`Frontend`](Frontend).
 2. Ejecuta `npm install` para instalar las dependencias.
 3. Ejecuta `ng serve` para iniciar el servidor de desarrollo de Angular.
+
+## Bases de Datos MySQL
+
+### BackendListas
+- Nombre de la base de datos: `lista`
+- Configuración de conexión: 
+  - URL: `jdbc:mysql://localhost:3306/lista?serverTimezone=UTC`
+  - Usuario: `listacompra`
+  - Contraseña: `listacompra`
+
+### backendUsuarios
+- Nombre de la base de datos: `usuarioslistacompra`
+- Configuración de conexión: 
+  - URL: `jdbc:mysql://localhost:3306/usuarioslistacompra?serverTimezone=UTC`
+  - Usuario: `listacompra`
+  - Contraseña: `listacompra`
