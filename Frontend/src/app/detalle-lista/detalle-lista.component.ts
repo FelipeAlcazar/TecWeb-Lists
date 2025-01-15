@@ -18,6 +18,7 @@ import { EmailUsuario } from '../models/emailusuario.model';
 export class DetalleListaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevoProducto: string = '';
   unidadesPedidas: number = 0;
+  unidadesCompradas: number = 0;
   producto: producto = new producto();
   idLista?: string = "";
   misProductos: producto[] = [];
