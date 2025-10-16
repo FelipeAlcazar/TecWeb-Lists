@@ -1,11 +1,10 @@
-# Proyecto Tecnologías y Sistemas Web
+# SplitList
 
-Este proyecto es una aplicación web para la gestión de listas de compras. Incluye un frontend desarrollado en Angular y dos backends desarrollados en Java con Spring Boot. El proyecto permite a los usuarios crear listas de compras, agregar productos, invitar a otros usuarios a colaborar en las listas y realizar pagos.
+Este proyecto es una aplicación web para la gestión de lista de la compra con objetivo de aprendiaje.
 
-## Desarrolladores
+Incluye un frontend desarrollado en Angular y dos backends desarrollados en Java con Spring Boot. El proyecto permite a los usuarios crear listas de compras, agregar productos, invitar a otros usuarios a colaborar en las listas y realizar pagos.
 
-- Felipe Álcazar Gómez
-- Alonso Crespo Fernández
+<img width="300" height="300" alt="splitlist" src="https://github.com/user-attachments/assets/f5cf94bc-baf5-4cf8-8063-7140ab07cf31" />
 
 ## Estructura del Proyecto
 
@@ -59,7 +58,7 @@ Para ejecutar las pruebas con JMeter, sigue estos pasos:
 2. Ejecuta `npm install` para instalar las dependencias.
 3. Ejecuta `ng serve` para iniciar el servidor de desarrollo de Angular.
 
-## Bases de Datos MySQL
+## Bases de Datos MySQL para pruebas localizadas
 
 ### BackendListas
 - Nombre de la base de datos: `lista`
@@ -74,3 +73,8 @@ Para ejecutar las pruebas con JMeter, sigue estos pasos:
   - URL: `jdbc:mysql://localhost:3306/usuarioslistacompra?serverTimezone=UTC`
   - Usuario: `listacompra`
   - Contraseña: `listacompra`
+
+## Desarrolladores
+
+- Felipe Álcazar Gómez
+- Alonso Crespo Fernández
