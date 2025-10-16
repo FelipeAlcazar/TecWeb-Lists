@@ -5,6 +5,9 @@ Este proyecto es una aplicación web para la gestión de lista de la compra con 
 Incluye un frontend desarrollado en Angular y dos backends desarrollados en Java con Spring Boot. El proyecto permite a los usuarios crear listas de compras, agregar productos, invitar a otros usuarios a colaborar en las listas y realizar pagos.
 
 <img width="300" height="300" alt="splitlist" src="https://github.com/user-attachments/assets/f5cf94bc-baf5-4cf8-8063-7140ab07cf31" />
+<br>
+
+![splitList](https://github.com/user-attachments/assets/104f88dd-35ce-4c0c-bd87-b73398d412e3)
 
 ## Estructura del Proyecto
 
